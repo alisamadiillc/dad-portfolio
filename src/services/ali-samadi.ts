@@ -38,6 +38,8 @@ type PresignResponse = {
   method: "PUT";
   bucket: string;
   key: string;
+  // Durable URL to display the object, or null when the bucket isn't public.
+  publicUrl: string | null;
   expiresIn: number;
   headers: { "Content-Type": string; "Content-Length": string };
 };
@@ -69,7 +71,11 @@ export const useUploadFile = () =>
         headers: { "Content-Type": presign.headers["Content-Type"] },
       });
 
-      return { bucket: presign.bucket, key: presign.key };
+      return {
+        bucket: presign.bucket,
+        key: presign.key,
+        publicUrl: presign.publicUrl,
+      };
     },
     onSuccess: () => toast.success("File uploaded"),
     onError: (e) => toast.error(errMsg(e)),

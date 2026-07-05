@@ -11,11 +11,12 @@
     "typecheck": "tsc -b --noEmit",
     "format": "prettier --write \"**/*.{ts,tsx,css,json,md}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,css,json,md}\"",
-    "db:types": "supabase gen types typescript --project-id pwptbsrofcsyazbyxbar --schema public > src/types/database.types.ts"
+    "db:types": "supabase gen types typescript --project-id oqkjisukmzdcprthturl --schema public > src/types/database.types.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
     "@clerk/react": "^6.11.3",
+    "@fontsource-variable/outfit": "^5.2.8",
     "@hookform/resolvers": "^5.4.0",
     "@supabase/supabase-js": "^2.110.0",
     "@tailwindcss/vite": "^4.3.2",
@@ -24,6 +25,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^1.23.0",
+    "motion": "^12.42.2",
     "next-themes": "^0.4.6",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",

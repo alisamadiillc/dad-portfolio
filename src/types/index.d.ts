@@ -6,3 +6,18 @@ type Post =
   import("./database.types").Database["public"]["Tables"]["posts"]["Row"];
 type PostInput =
   import("./database.types").Database["public"]["Tables"]["posts"]["Insert"];
+
+type Experience =
+  import("./database.types").Database["public"]["Tables"]["experience"]["Row"];
+type ExperienceInput =
+  import("./database.types").Database["public"]["Tables"]["experience"]["Insert"];
+
+type Skill =
+  import("./database.types").Database["public"]["Tables"]["skills"]["Row"];
+type SkillInput =
+  import("./database.types").Database["public"]["Tables"]["skills"]["Insert"];
+
+type Project =
+  import("./database.types").Database["public"]["Tables"]["projects"]["Row"];
+type ProjectInput =
+  import("./database.types").Database["public"]["Tables"]["projects"]["Insert"];

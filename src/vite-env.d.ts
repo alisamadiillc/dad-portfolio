@@ -1,5 +1,7 @@
 /// <reference types="vite/client" />
 
+declare module "@fontsource-variable/outfit";
+
 interface ImportMetaEnv {
   readonly VITE_CLERK_PUBLISHABLE_KEY: string;
   readonly VITE_SUPABASE_URL: string;

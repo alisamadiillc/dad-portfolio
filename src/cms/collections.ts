@@ -1,4 +1,10 @@
-import { FileText, type LucideIcon } from "lucide-react";
+import {
+  Briefcase,
+  FileText,
+  Hammer,
+  Images,
+  type LucideIcon,
+} from "lucide-react";
 
 export interface CmsCollection {
   slug: string;
@@ -11,10 +17,31 @@ export interface CmsCollection {
 
 /**
  * CMS collections registry. Adding a collection here surfaces it in the admin
- * sidebar and dashboard. Pair each entry with a `src/features/<slug>/` folder
- * (types, api, queries, schema) and its list/editor pages.
+ * sidebar and dashboard. Pair each entry with a `src/services/<slug>.ts` file
+ * (schema + queries) and its list/editor pages.
  */
 export const collections: CmsCollection[] = [
+  {
+    slug: "experience",
+    label: "Experience",
+    description: "Work history timeline",
+    path: "/admin/cms/experience",
+    icon: Briefcase,
+  },
+  {
+    slug: "skills",
+    label: "What I do",
+    description: "Services and capabilities",
+    path: "/admin/cms/skills",
+    icon: Hammer,
+  },
+  {
+    slug: "projects",
+    label: "Selected work",
+    description: "Featured projects",
+    path: "/admin/cms/projects",
+    icon: Images,
+  },
   {
     slug: "blog",
     label: "Blog",

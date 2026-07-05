@@ -6,8 +6,11 @@ import { ProtectedRoute } from "@/components/protected-route";
 import { AdminLayout } from "@/layouts/admin-layout";
 import { CmsHome } from "@/pages/admin/cms-home";
 import { Dashboard } from "@/pages/admin/dashboard";
+import { ExperienceList } from "@/pages/admin/experience-list";
 import { PostEditor } from "@/pages/admin/post-editor";
 import { PostsList } from "@/pages/admin/posts-list";
+import { ProjectsList } from "@/pages/admin/projects-list";
+import { SkillsList } from "@/pages/admin/skills-list";
 import { BlogList } from "@/pages/blog/blog-list";
 import { BlogPost } from "@/pages/blog/blog-post";
 import Landing from "@/pages/landing";
@@ -42,6 +45,9 @@ function AdminApp() {
           <Route path="/" element={<AdminLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="cms" element={<CmsHome />} />
+            <Route path="cms/experience" element={<ExperienceList />} />
+            <Route path="cms/skills" element={<SkillsList />} />
+            <Route path="cms/projects" element={<ProjectsList />} />
             <Route path="cms/blog" element={<PostsList />} />
             <Route path="cms/blog/new" element={<PostEditor />} />
             <Route path="cms/blog/:id" element={<PostEditor />} />
