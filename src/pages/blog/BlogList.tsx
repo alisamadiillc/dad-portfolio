@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
-import { usePublishedPosts } from "@/features/blog/queries";
+import { usePublishedPosts } from "@/services/blog";
 
 export function BlogList() {
   const { data: posts, isLoading } = usePublishedPosts();

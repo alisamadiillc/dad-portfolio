@@ -15,11 +15,12 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 
 import {
+  postSchema,
   useCreatePost,
   usePostById,
   useUpdatePost,
-} from "@/features/blog/queries";
-import { postSchema, type PostFormValues } from "@/features/blog/schema";
+  type PostFormValues,
+} from "@/services/blog";
 
 const EMPTY: PostFormValues = {
   title: "",

@@ -4,7 +4,7 @@ import { Link, useParams } from "react-router-dom";
 
 import { Skeleton } from "@/components/ui/skeleton";
 
-import { usePostBySlug } from "@/features/blog/queries";
+import { usePostBySlug } from "@/services/blog";
 
 export function BlogPost() {
   const { slug = "" } = useParams();

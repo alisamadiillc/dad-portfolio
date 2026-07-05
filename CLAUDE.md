@@ -81,8 +81,9 @@ Package is `@clerk/react`. Router is **react-router-dom v7**.
 - **Only the anon key ships to the browser.** Never put the service-role key in client code / `VITE_` vars — it bypasses RLS.
 - Enforce **Row Level Security** on every table. Client trusts RLS, not app-side checks.
 - **Clerk auth via native integration**: client is created with `accessToken: async () => window.Clerk?.session?.getToken()` — Clerk's session token is attached to every Supabase request, so RLS sees the Clerk user id. No JWT template needed.
-- Requires the Clerk ↔ Supabase integration enabled in **both dashboards** (Clerk: Supabase integration on; Supabase: Clerk as third-party auth provider).
+- Requires the Clerk ↔ Supabase integration enabled in **both dashboards** (Clerk: Supabase integration on; Supabase: Clerk as third-party auth provider). If missing, requests 401 with `PGRST301 "No suitable key … or wrong key type"` — Supabase can't verify Clerk's RS256 token until Clerk is registered as a third-party provider.
 - Env vars typed in `src/vite-env.d.ts`; `window.Clerk` global also declared there.
+- **Fully typed client**: `createClient<Database>(...)` where `Database` comes from `src/types/database.types.ts`, generated from the live schema via `pnpm db:types` (Supabase CLI; run `supabase login` once first). `.from("posts").select()` etc. are inferred — no manual casts. Regenerate after any schema change. Global `Post`/`PostInput` in `src/types/index.d.ts` are derived from this file (`Database["public"]["Tables"]["posts"]["Row"|"Insert"]`), so they stay in sync.
 
 ## CMS
 
@@ -90,13 +91,14 @@ Content collections live behind the admin. Data fetching/mutations use **TanStac
 Query** (`QueryClientProvider` in `main.tsx`, `src/lib/queryClient.ts`).
 
 - **Registry**: `src/cms/collections.ts` — array of `{ slug, label, description, path, icon }`. Drives the admin sidebar (`components/admin/AppSidebar.tsx`) and dashboard grid (`components/admin/CollectionGrid.tsx`).
-- **Per-collection feature folder**: `src/features/<slug>/` — `types.ts`, `schema.ts` (zod), `api.ts` (Supabase CRUD), `queries.ts` (Query hooks with toasts + `["<slug>"]` invalidation). Blog is the reference (`src/features/blog/`).
+- **Per-collection service file**: `src/services/<slug>.ts` — one file holding the zod `schema` (at top) + React Query hooks. Supabase CRUD is **inlined inside each `queryFn`/`mutationFn`** (no separate `api.ts`); mutations carry toasts + `["<slug>"]` invalidation. Blog is the reference (`src/services/blog.ts`).
+- **Types are global**: `src/types/index.d.ts` — ambient declarations (no top-level `import`/`export`), so `Post`, `PostInput`, etc. are available everywhere without importing. They're aliased from the generated `database.types.ts` (see Database section) via inline `import(...)` types, keeping them DB-accurate.
 - **Admin pages**: `src/pages/admin/` — `Dashboard`, `CmsHome`, `PostsList` (shadcn Table + row actions + AlertDialog delete), `PostEditor` (react-hook-form + zod + shadcn Input/Textarea/Switch; create & edit).
 - **Public pages**: `src/pages/blog/` — `BlogList`, `BlogPost` (markdown via `react-markdown` in `prose`, `@tailwindcss/typography`).
 - **Routes**: admin nested under `AdminLayout` (`/admin`, `/admin/cms`, `/admin/cms/blog`, `/admin/cms/blog/new`, `/admin/cms/blog/:id`); public `/blog`, `/blog/:slug`.
 - **Forms**: no shadcn `form.tsx` (Base UI registry omits it). Use react-hook-form directly with shadcn `Input`/`Textarea`/`Label`/`Switch`; `Controller` for `Switch`.
 
-**Add a collection**: add a registry entry in `cms/collections.ts`, create `features/<slug>/` mirroring `features/blog/`, add its list/editor pages + routes. Create the Supabase table + RLS (Ali runs SQL).
+**Add a collection**: add a registry entry in `cms/collections.ts`, create `services/<slug>.ts` mirroring `services/blog.ts` (schema + hooks), add its row types to `types/index.d.ts`, add its list/editor pages + routes. Create the Supabase table + RLS (Ali runs SQL).
 
 ### Supabase `posts` table
 

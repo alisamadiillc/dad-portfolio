@@ -30,8 +30,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { useAllPosts, useDeletePost } from "@/features/blog/queries";
-import type { Post } from "@/features/blog/types";
+import { useAllPosts, useDeletePost } from "@/services/blog";
 
 export function PostsList() {
   const navigate = useNavigate();
