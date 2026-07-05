@@ -14,7 +14,7 @@ const NAME = "Mohammad Amin Samadi";
 const SHORT_NAME = "Mohammad A. Samadi";
 const PHONE = "(555) 000-0000";
 const PHONE_HREF = "tel:+15550000000";
-const EMAIL = "masamadi@email.com";
+const EMAIL = "masamadi.sfr@email.com";
 
 const NAV = [
   { label: "About", href: "#about" },
@@ -127,12 +127,11 @@ function Hero() {
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         className="relative"
       >
-        <div
-          aria-label={NAME}
-          className="bg-secondary text-foreground ring-border flex size-16 items-center justify-center rounded-full text-lg font-semibold ring-1"
-        >
-          MAS
-        </div>
+        <img
+          src="https://cdn.samadihomerenovation.com/projects/IMG_0874.jpg"
+          alt=""
+          className="bg-secondary text-foreground ring-border flex size-24 items-center justify-center rounded-full object-cover text-lg font-semibold ring-1 md:size-32 lg:size-40"
+        />
 
         <div className="mt-6">
           <span className="bg-foreground text-background inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium">
