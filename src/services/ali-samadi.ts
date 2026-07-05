@@ -38,8 +38,8 @@ type PresignResponse = {
   method: "PUT";
   bucket: string;
   key: string;
-  // Durable URL to display the object, or null when the bucket isn't public.
-  publicUrl: string | null;
+  // Durable URL to display the object (served from the bucket's public base URL).
+  publicUrl: string;
   expiresIn: number;
   headers: { "Content-Type": string; "Content-Length": string };
 };
