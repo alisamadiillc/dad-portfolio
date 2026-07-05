@@ -11,6 +11,9 @@ Standalone client web app. **Not** the Next.js agency template — different sta
 | Build tool         | Vite 8 (Rolldown)                                  |
 | Framework          | React 19 (React Compiler enabled via Babel plugin) |
 | Language           | TypeScript 6                                       |
+| Styling            | **Tailwind CSS 4** (`@tailwindcss/vite`, no config file) |
+| UI components       | **shadcn/ui** (new-york style, neutral, Radix-based) |
+| Icons              | lucide-react                                       |
 | Auth               | **Clerk** (`@clerk/clerk-react`)                   |
 | Database / backend | **Supabase** (`@supabase/supabase-js`)             |
 | Package manager    | **pnpm only** — never npm/yarn                     |
@@ -38,7 +41,24 @@ src/
 public/             # static, served at / (favicon.svg, icons.svg)
 ```
 
+```
+src/
+  components/ui/    # shadcn components (CLI-generated)
+  lib/utils.ts      # cn() — clsx + tailwind-merge
+```
+
 Client-only SPA — no server/SSR. All rendering in the browser.
+
+## UI — Tailwind + shadcn
+
+- **Tailwind v4**, config-less. Theme tokens + `@theme inline` live in `src/index.css`. No `tailwind.config.js`.
+- Plugin wired in `vite.config.ts` (`@tailwindcss/vite`). Import is `@import 'tailwindcss'` in `index.css`.
+- Path alias `@/*` → `src/*` (set in `vite.config.ts` + `tsconfig.json`/`tsconfig.app.json`, **no `baseUrl`** — TS 6 deprecated it; bare `paths` resolves relative to tsconfig).
+- Add components: `pnpm dlx shadcn@latest add <name>`. Lands in `src/components/ui/`.
+- shadcn config in `components.json` (new-york, neutral, `rsc: false`, `tsx: true`).
+- This is **standard Radix-based shadcn** — `asChild` prop is valid here. (Differs from parent Next template which uses Base UI.)
+- Merge classes with `cn()` from `@/lib/utils`.
+- Dark mode: `.dark` class on root; tokens already defined.
 
 ## Auth — Clerk
 
