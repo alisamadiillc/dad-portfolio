@@ -6,18 +6,18 @@ Standalone client web app. **Not** the Next.js agency template — different sta
 
 ## Stack
 
-| Concern            | Choice                                             |
-| ------------------ | -------------------------------------------------- |
-| Build tool         | Vite 8 (Rolldown)                                  |
-| Framework          | React 19 (React Compiler enabled via Babel plugin) |
-| Language           | TypeScript 6                                       |
-| Styling            | **Tailwind CSS 4** (`@tailwindcss/vite`, no config file) |
-| UI components       | **shadcn/ui** (new-york style, neutral, Radix-based) |
-| Icons              | lucide-react                                       |
-| Auth               | **Clerk** (`@clerk/clerk-react`)                   |
-| Database / backend | **Supabase** (`@supabase/supabase-js`)             |
-| Package manager    | **pnpm only** — never npm/yarn                     |
-| Lint               | ESLint 10 flat config (`eslint.config.js`)         |
+| Concern            | Choice                                                                 |
+| ------------------ | ---------------------------------------------------------------------- |
+| Build tool         | Vite 8 (Rolldown)                                                      |
+| Framework          | React 19 (React Compiler enabled via Babel plugin)                     |
+| Language           | TypeScript 6                                                           |
+| Styling            | **Tailwind CSS 4** (`@tailwindcss/vite`, no config file)               |
+| UI components      | **shadcn/ui — Base UI** (`base-nova` style, neutral, `@base-ui/react`) |
+| Icons              | lucide-react                                                           |
+| Auth               | **Clerk** (`@clerk/clerk-react`)                                       |
+| Database / backend | **Supabase** (`@supabase/supabase-js`)                                 |
+| Package manager    | **pnpm only** — never npm/yarn                                         |
+| Lint               | ESLint 10 flat config (`eslint.config.js`)                             |
 
 ## Commands
 
@@ -26,6 +26,8 @@ pnpm dev        # Vite dev server + HMR
 pnpm build      # tsc -b && vite build
 pnpm preview    # serve production build
 pnpm lint       # eslint .
+pnpm format     # prettier --write
+pnpm format:check  # prettier --check (CI)
 ```
 
 ## Structure
@@ -55,8 +57,8 @@ Client-only SPA — no server/SSR. All rendering in the browser.
 - Plugin wired in `vite.config.ts` (`@tailwindcss/vite`). Import is `@import 'tailwindcss'` in `index.css`.
 - Path alias `@/*` → `src/*` (set in `vite.config.ts` + `tsconfig.json`/`tsconfig.app.json`, **no `baseUrl`** — TS 6 deprecated it; bare `paths` resolves relative to tsconfig).
 - Add components: `pnpm dlx shadcn@latest add <name>`. Lands in `src/components/ui/`.
-- shadcn config in `components.json` (new-york, neutral, `rsc: false`, `tsx: true`).
-- This is **standard Radix-based shadcn** — `asChild` prop is valid here. (Differs from parent Next template which uses Base UI.)
+- shadcn config in `components.json` (`base-nova`, neutral, `rsc: false`, `tsx: true`).
+- **Base UI, not Radix** — same as parent Next template. **No `asChild`** — compose with the **`render` prop** instead (e.g. `<Button render={<a href="..." />}>`). Primitives import from `@base-ui/react/*`.
 - Merge classes with `cn()` from `@/lib/utils`.
 - Dark mode: `.dark` class on root; tokens already defined.
 
@@ -90,7 +92,8 @@ Never commit secrets. No service-role key client-side.
 
 - React 19 + React Compiler on — **do not** hand-add `useMemo`/`useCallback`/`memo` for perf; compiler handles memoization. Add only for semantic reasons.
 - Functional components + hooks. TS strict.
-- Path/import style: relative imports from `src/`. Add an alias in `vite.config.ts` + `tsconfig` if `@/` desired.
+- Imports: use `@/` alias for `src/`. Prettier auto-sorts import order (`@ianvs/prettier-plugin-sort-imports`) and Tailwind classes (`prettier-plugin-tailwindcss`).
+- Formatting: double quotes, semicolons, 2-space, `trailingComma: es5` — config in `.prettierrc`. Run `pnpm format` before done.
 - Run `pnpm lint` before done.
 
 ## Never
