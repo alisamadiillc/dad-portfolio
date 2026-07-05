@@ -128,8 +128,10 @@ function Hero() {
         className="relative"
       >
         <img
-          src="https://cdn.samadihomerenovation.com/projects/IMG_0874.jpg"
-          alt=""
+          src="https://cdn.samadihomerenovation.com/projects/mohammadsamadi.webp"
+          alt={NAME}
+          width={160}
+          height={160}
           className="bg-secondary text-foreground ring-border flex size-24 items-center justify-center rounded-full object-cover text-lg font-semibold ring-1 md:size-32 lg:size-40"
         />
 
