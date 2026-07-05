@@ -1,126 +1,126 @@
-import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
+import { z } from "zod";
 
-import heroImg from "@/assets/hero.png";
-import reactLogo from "@/assets/react.svg";
-import viteLogo from "@/assets/vite.svg";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
-import "@/app.css";
+import { useSendEmail } from "@/services/ali-samadi";
+
+// Where contact submissions are delivered. Change to the site owner's inbox.
+const CONTACT_TO = "a@alisamadii.com";
+
+const contactSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  email: z.email("Enter a valid email"),
+  message: z.string().min(1, "Message is required"),
+});
+
+type ContactValues = z.infer<typeof contactSchema>;
 
 function Landing() {
-  const [count, setCount] = useState(0);
+  const sendEmail = useSendEmail();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<ContactValues>({
+    resolver: zodResolver(contactSchema),
+    defaultValues: { name: "", email: "", message: "" },
+  });
+
+  const onSubmit = handleSubmit(({ name, email, message }) => {
+    sendEmail.mutate(
+      {
+        to: CONTACT_TO,
+        subject: `New contact from ${name}`,
+        html: `<p><strong>${name}</strong> (${email}) wrote:</p><p>${message}</p>`,
+        text: `${name} (${email}) wrote:\n\n${message}`,
+      },
+      { onSuccess: () => reset() }
+    );
+  });
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <main className="bg-background flex min-h-svh items-center justify-center px-4 py-16">
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle>Get in touch</CardTitle>
+          <CardDescription>
+            Send us a message and we'll get back to you.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={onSubmit} className="space-y-4" noValidate>
+            <div className="space-y-2">
+              <Label htmlFor="name">Name</Label>
+              <Input id="name" placeholder="Jane Doe" {...register("name")} />
+              {errors.name && (
+                <p className="text-destructive text-sm">
+                  {errors.name.message}
+                </p>
+              )}
+            </div>
 
-      <div className="ticks"></div>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="jane@example.com"
+                {...register("email")}
+              />
+              {errors.email && (
+                <p className="text-destructive text-sm">
+                  {errors.email.message}
+                </p>
+              )}
+            </div>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+            <div className="space-y-2">
+              <Label htmlFor="message">Message</Label>
+              <Textarea
+                id="message"
+                rows={5}
+                placeholder="How can we help?"
+                {...register("message")}
+              />
+              {errors.message && (
+                <p className="text-destructive text-sm">
+                  {errors.message.message}
+                </p>
+              )}
+            </div>
 
-      <div className="ticks"></div>
-      <section id="spacer">
-        <Link to="/admin">Admin</Link>
-      </section>
-    </>
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={sendEmail.isPending}
+            >
+              {sendEmail.isPending ? "Sending..." : "Send message"}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+
+      <Link
+        to="/admin"
+        className="text-muted-foreground hover:text-foreground fixed right-4 bottom-4 text-sm"
+      >
+        Admin
+      </Link>
+    </main>
   );
 }
 
