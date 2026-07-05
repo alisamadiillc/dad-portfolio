@@ -78,10 +78,12 @@ Package is `@clerk/react`. Router is **react-router-dom v7**.
 
 ## Database — Supabase
 
-- Client: `createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_ANON_KEY)` in a `src/lib/supabase.ts` singleton.
+- **Client-side only.** Singleton in `src/lib/supabase.ts` — `import { supabase } from "@/lib/supabase"`.
 - **Only the anon key ships to the browser.** Never put the service-role key in client code / `VITE_` vars — it bypasses RLS.
 - Enforce **Row Level Security** on every table. Client trusts RLS, not app-side checks.
-- Bridge Clerk → Supabase: mint a Supabase-compatible token from Clerk (Clerk JWT template) and pass it to the Supabase client so RLS sees the Clerk user id. Without this, Supabase auth and Clerk auth are separate.
+- **Clerk auth via native integration**: client is created with `accessToken: async () => window.Clerk?.session?.getToken()` — Clerk's session token is attached to every Supabase request, so RLS sees the Clerk user id. No JWT template needed.
+- Requires the Clerk ↔ Supabase integration enabled in **both dashboards** (Clerk: Supabase integration on; Supabase: Clerk as third-party auth provider).
+- Env vars typed in `src/vite-env.d.ts`; `window.Clerk` global also declared there.
 
 ## Env
 
