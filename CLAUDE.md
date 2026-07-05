@@ -43,10 +43,9 @@ src/
   assets/               # bundled images/svg
   pages/
     Landing.tsx         # / — demo landing (public)
-    SignInPage.tsx      # /sign-in — Clerk <SignIn>
     Admin.tsx           # /admin — protected
   components/
-    ProtectedRoute.tsx  # useAuth guard → <Outlet /> or redirect
+    ProtectedRoute.tsx  # useAuth guard → <Outlet /> or inline <SignIn>
     ui/                 # shadcn components (CLI-generated)
   lib/utils.ts          # cn() — clsx + tailwind-merge
 public/                 # static, served at / (favicon.svg, icons.svg)
@@ -70,10 +69,10 @@ Client-only SPA — no server/SSR. All rendering in the browser.
 Package is `@clerk/react`. Router is **react-router-dom v7**.
 
 - **Provider** lives in `src/App.tsx` (inside `<BrowserRouter>` from `main.tsx` so it can use `useNavigate`): `<ClerkProvider publishableKey routerPush routerReplace afterSignOutUrl="/">`. Key from `import.meta.env.VITE_CLERK_PUBLISHABLE_KEY` (throws if missing).
-- **Routes**: `/` demo landing (public) · `/sign-in` (public) · `/admin` (signed-in only) · `*` → `/`.
-- **Sign-in only, no sign-up.** `src/pages/SignInPage.tsx` renders `<SignIn forceRedirectUrl="/admin" />`. There is **no `/sign-up` route** — users are created in the Clerk dashboard (invite / restricted mode). Do not add a sign-up page.
-- **Protecting routes**: `src/components/ProtectedRoute.tsx` uses `useAuth()` (`isLoaded`/`isSignedIn`) and renders `<Outlet />` or `<Navigate to="/sign-in" replace />`. Wrap protected `<Route>`s inside it. Prefer this over `<SignedIn>/<SignedOut>`.
-- After sign-in → `/admin` (`forceRedirectUrl`). Sign-out (`<UserButton>`) → `/` (`afterSignOutUrl`).
+- **Routes**: `/` demo landing (public) · `/admin` (signed-in only) · `*` → `/`. **No `/sign-in` route** — sign-in is shown inline.
+- **No separate sign-in page, no sign-up.** `src/components/ProtectedRoute.tsx` uses `useAuth()` (`isLoaded`/`isSignedIn`): signed out → renders Clerk `<SignIn>` inline (virtual routing, stays on `/admin`); signed in → `<Outlet />`. Wrap protected `<Route>`s inside it. Prefer this over `<SignedIn>/<SignedOut>`.
+- Sign-up link hidden via `appearance.elements.footerAction: { display: "none" }`. Users are created in the Clerk dashboard (invite / restricted). Do not add a sign-up page.
+- Sign-out (`<UserButton>`) → `/` (`afterSignOutUrl`).
 - Dev needs `VITE_CLERK_PUBLISHABLE_KEY=pk_...` in `.env.local`.
 
 ## Database — Supabase

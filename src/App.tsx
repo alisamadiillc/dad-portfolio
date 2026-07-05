@@ -5,7 +5,6 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 
 import Admin from "@/pages/Admin";
 import Landing from "@/pages/Landing";
-import SignInPage from "@/pages/SignInPage";
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
@@ -21,11 +20,10 @@ function App() {
       publishableKey={PUBLISHABLE_KEY}
       routerPush={(to) => navigate(to)}
       routerReplace={(to) => navigate(to, { replace: true })}
-      afterSignOutUrl="/"
+      afterSignOutUrl="/admin"
     >
       <Routes>
         <Route path="/" element={<Landing />} />
-        <Route path="/sign-in" element={<SignInPage />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/admin" element={<Admin />} />
         </Route>
