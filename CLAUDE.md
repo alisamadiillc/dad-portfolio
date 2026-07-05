@@ -11,10 +11,11 @@ Standalone client web app. **Not** the Next.js agency template — different sta
 | Build tool         | Vite 8 (Rolldown)                                                      |
 | Framework          | React 19 (React Compiler enabled via Babel plugin)                     |
 | Language           | TypeScript 6                                                           |
+| Routing            | **react-router-dom v7**                                                |
 | Styling            | **Tailwind CSS 4** (`@tailwindcss/vite`, no config file)               |
 | UI components      | **shadcn/ui — Base UI** (`base-nova` style, neutral, `@base-ui/react`) |
 | Icons              | lucide-react                                                           |
-| Auth               | **Clerk** (`@clerk/clerk-react`)                                       |
+| Auth               | **Clerk** (`@clerk/react`)                                             |
 | Database / backend | **Supabase** (`@supabase/supabase-js`)                                 |
 | Package manager    | **pnpm only** — never npm/yarn                                         |
 | Lint               | ESLint 10 flat config (`eslint.config.js`)                             |
@@ -33,20 +34,22 @@ pnpm format:check  # prettier --check (CI)
 ## Structure
 
 ```
-index.html          # SPA entry, mounts #root
+index.html              # SPA entry, mounts #root
 src/
-  main.tsx          # createRoot + <StrictMode>
-  App.tsx           # root component
-  index.css         # global styles
-  App.css           # component styles
-  assets/           # bundled images/svg
-public/             # static, served at / (favicon.svg, icons.svg)
-```
-
-```
-src/
-  components/ui/    # shadcn components (CLI-generated)
-  lib/utils.ts      # cn() — clsx + tailwind-merge
+  main.tsx              # createRoot + <StrictMode> + <BrowserRouter>
+  App.tsx               # ClerkProvider + <Routes>
+  index.css             # global styles + Tailwind/theme
+  App.css               # landing demo styles
+  assets/               # bundled images/svg
+  pages/
+    Landing.tsx         # / — demo landing (public)
+    SignInPage.tsx      # /sign-in — Clerk <SignIn>
+    Admin.tsx           # /admin — protected
+  components/
+    ProtectedRoute.tsx  # useAuth guard → <Outlet /> or redirect
+    ui/                 # shadcn components (CLI-generated)
+  lib/utils.ts          # cn() — clsx + tailwind-merge
+public/                 # static, served at / (favicon.svg, icons.svg)
 ```
 
 Client-only SPA — no server/SSR. All rendering in the browser.
@@ -64,10 +67,14 @@ Client-only SPA — no server/SSR. All rendering in the browser.
 
 ## Auth — Clerk
 
-- Provider: wrap app in `<ClerkProvider publishableKey={...}>` in `main.tsx`.
-- Publishable key from `import.meta.env.VITE_CLERK_PUBLISHABLE_KEY` (Vite exposes only `VITE_`-prefixed env vars to client).
-- Use Clerk hooks/components: `useAuth`, `useUser`, `<SignedIn>`, `<SignedOut>`, `<SignIn>`, `<UserButton>`.
-- Gate protected UI with `<SignedIn>` / `<SignedOut>`, not manual token checks.
+Package is `@clerk/react`. Router is **react-router-dom v7**.
+
+- **Provider** lives in `src/App.tsx` (inside `<BrowserRouter>` from `main.tsx` so it can use `useNavigate`): `<ClerkProvider publishableKey routerPush routerReplace afterSignOutUrl="/">`. Key from `import.meta.env.VITE_CLERK_PUBLISHABLE_KEY` (throws if missing).
+- **Routes**: `/` demo landing (public) · `/sign-in` (public) · `/admin` (signed-in only) · `*` → `/`.
+- **Sign-in only, no sign-up.** `src/pages/SignInPage.tsx` renders `<SignIn forceRedirectUrl="/admin" />`. There is **no `/sign-up` route** — users are created in the Clerk dashboard (invite / restricted mode). Do not add a sign-up page.
+- **Protecting routes**: `src/components/ProtectedRoute.tsx` uses `useAuth()` (`isLoaded`/`isSignedIn`) and renders `<Outlet />` or `<Navigate to="/sign-in" replace />`. Wrap protected `<Route>`s inside it. Prefer this over `<SignedIn>/<SignedOut>`.
+- After sign-in → `/admin` (`forceRedirectUrl`). Sign-out (`<UserButton>`) → `/` (`afterSignOutUrl`).
+- Dev needs `VITE_CLERK_PUBLISHABLE_KEY=pk_...` in `.env.local`.
 
 ## Database — Supabase
 
