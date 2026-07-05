@@ -25,4 +25,12 @@ export default defineConfig([
       ],
     },
   },
+  {
+    // shadcn/ui CLI-generated primitives — vendored, not hand-maintained.
+    files: ["src/components/ui/**", "src/hooks/**"],
+    rules: {
+      "react-refresh/only-export-components": "off",
+      "react-hooks/set-state-in-effect": "off",
+    },
+  },
 ]);

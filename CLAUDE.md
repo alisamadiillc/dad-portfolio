@@ -84,6 +84,41 @@ Package is `@clerk/react`. Router is **react-router-dom v7**.
 - Requires the Clerk ↔ Supabase integration enabled in **both dashboards** (Clerk: Supabase integration on; Supabase: Clerk as third-party auth provider).
 - Env vars typed in `src/vite-env.d.ts`; `window.Clerk` global also declared there.
 
+## CMS
+
+Content collections live behind the admin. Data fetching/mutations use **TanStack
+Query** (`QueryClientProvider` in `main.tsx`, `src/lib/queryClient.ts`).
+
+- **Registry**: `src/cms/collections.ts` — array of `{ slug, label, description, path, icon }`. Drives the admin sidebar (`components/admin/AppSidebar.tsx`) and dashboard grid (`components/admin/CollectionGrid.tsx`).
+- **Per-collection feature folder**: `src/features/<slug>/` — `types.ts`, `schema.ts` (zod), `api.ts` (Supabase CRUD), `queries.ts` (Query hooks with toasts + `["<slug>"]` invalidation). Blog is the reference (`src/features/blog/`).
+- **Admin pages**: `src/pages/admin/` — `Dashboard`, `CmsHome`, `PostsList` (shadcn Table + row actions + AlertDialog delete), `PostEditor` (react-hook-form + zod + shadcn Input/Textarea/Switch; create & edit).
+- **Public pages**: `src/pages/blog/` — `BlogList`, `BlogPost` (markdown via `react-markdown` in `prose`, `@tailwindcss/typography`).
+- **Routes**: admin nested under `AdminLayout` (`/admin`, `/admin/cms`, `/admin/cms/blog`, `/admin/cms/blog/new`, `/admin/cms/blog/:id`); public `/blog`, `/blog/:slug`.
+- **Forms**: no shadcn `form.tsx` (Base UI registry omits it). Use react-hook-form directly with shadcn `Input`/`Textarea`/`Label`/`Switch`; `Controller` for `Switch`.
+
+**Add a collection**: add a registry entry in `cms/collections.ts`, create `features/<slug>/` mirroring `features/blog/`, add its list/editor pages + routes. Create the Supabase table + RLS (Ali runs SQL).
+
+### Supabase `posts` table
+
+```sql
+create table if not exists posts (
+  id uuid primary key default gen_random_uuid(),
+  title text not null,
+  slug text not null unique,
+  excerpt text,
+  content text not null default '',
+  cover_image_url text,
+  published boolean not null default false,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+alter table posts enable row level security;
+create policy "public read published" on posts
+  for select using (published = true);
+create policy "authenticated full access" on posts
+  for all to authenticated using (true) with check (true);
+```
+
 ## Env
 
 `.env.local` (gitignored). Client-exposed vars **must** be `VITE_`-prefixed:
