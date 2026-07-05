@@ -1,15 +1,16 @@
 import { ClerkProvider } from "@clerk/react";
 import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 
-import { ProtectedRoute } from "@/components/ProtectedRoute";
-import { AdminLayout } from "@/layouts/AdminLayout";
-import { CmsHome } from "@/pages/admin/CmsHome";
-import { Dashboard } from "@/pages/admin/Dashboard";
-import { PostEditor } from "@/pages/admin/PostEditor";
-import { PostsList } from "@/pages/admin/PostsList";
-import { BlogList } from "@/pages/blog/BlogList";
-import { BlogPost } from "@/pages/blog/BlogPost";
-import Landing from "@/pages/Landing";
+import { ProtectedRoute } from "@/components/protected-route";
+
+import { AdminLayout } from "@/layouts/admin-layout";
+import { CmsHome } from "@/pages/admin/cms-home";
+import { Dashboard } from "@/pages/admin/dashboard";
+import { PostEditor } from "@/pages/admin/post-editor";
+import { PostsList } from "@/pages/admin/posts-list";
+import { BlogList } from "@/pages/blog/blog-list";
+import { BlogPost } from "@/pages/blog/blog-post";
+import Landing from "@/pages/landing";
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
@@ -22,7 +23,7 @@ function AdminApp() {
 
   if (!PUBLISHABLE_KEY) {
     return (
-      <div className="mx-auto max-w-md p-8 text-center text-muted-foreground">
+      <div className="text-muted-foreground mx-auto max-w-md p-8 text-center">
         Set <code>VITE_CLERK_PUBLISHABLE_KEY</code> in <code>.env.local</code>{" "}
         and restart the dev server to enable the admin.
       </div>

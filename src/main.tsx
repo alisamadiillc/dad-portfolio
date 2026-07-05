@@ -5,11 +5,11 @@ import { BrowserRouter } from "react-router-dom";
 
 import "./index.css";
 
-import { queryClient } from "@/lib/queryClient";
+import { queryClient } from "@/lib/query-client";
 
 import { Toaster } from "@/components/ui/sonner";
 
-import App from "./App.tsx";
+import App from "./app.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

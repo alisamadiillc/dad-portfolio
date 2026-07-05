@@ -1,4 +1,4 @@
-import { CollectionGrid } from "@/components/admin/CollectionGrid";
+import { CollectionGrid } from "@/components/admin/collection-grid";
 
 export function Dashboard() {
   return (

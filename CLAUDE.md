@@ -37,15 +37,15 @@ pnpm format:check  # prettier --check (CI)
 index.html              # SPA entry, mounts #root
 src/
   main.tsx              # createRoot + <StrictMode> + <BrowserRouter>
-  App.tsx               # ClerkProvider + <Routes>
+  app.tsx               # ClerkProvider + <Routes>
   index.css             # global styles + Tailwind/theme
-  App.css               # landing demo styles
+  app.css               # landing demo styles
   assets/               # bundled images/svg
   pages/
-    Landing.tsx         # / — demo landing (public)
+    landing.tsx         # / — demo landing (public)
     Admin.tsx           # /admin — protected
   components/
-    ProtectedRoute.tsx  # useAuth guard → <Outlet /> or inline <SignIn>
+    protected-route.tsx  # useAuth guard → <Outlet /> or inline <SignIn>
     ui/                 # shadcn components (CLI-generated)
   lib/utils.ts          # cn() — clsx + tailwind-merge
 public/                 # static, served at / (favicon.svg, icons.svg)
@@ -68,9 +68,9 @@ Client-only SPA — no server/SSR. All rendering in the browser.
 
 Package is `@clerk/react`. Router is **react-router-dom v7**.
 
-- **Provider** lives in `src/App.tsx` (inside `<BrowserRouter>` from `main.tsx` so it can use `useNavigate`): `<ClerkProvider publishableKey routerPush routerReplace afterSignOutUrl="/">`. Key from `import.meta.env.VITE_CLERK_PUBLISHABLE_KEY` (throws if missing).
+- **Provider** lives in `src/app.tsx` (inside `<BrowserRouter>` from `main.tsx` so it can use `useNavigate`): `<ClerkProvider publishableKey routerPush routerReplace afterSignOutUrl="/">`. Key from `import.meta.env.VITE_CLERK_PUBLISHABLE_KEY` (throws if missing).
 - **Routes**: `/` demo landing (public) · `/admin` (signed-in only) · `*` → `/`. **No `/sign-in` route** — sign-in is shown inline.
-- **No separate sign-in page, no sign-up.** `src/components/ProtectedRoute.tsx` uses `useAuth()` (`isLoaded`/`isSignedIn`): signed out → renders Clerk `<SignIn>` inline (virtual routing, stays on `/admin`); signed in → `<Outlet />`. Wrap protected `<Route>`s inside it. Prefer this over `<SignedIn>/<SignedOut>`.
+- **No separate sign-in page, no sign-up.** `src/components/protected-route.tsx` uses `useAuth()` (`isLoaded`/`isSignedIn`): signed out → renders Clerk `<SignIn>` inline (virtual routing, stays on `/admin`); signed in → `<Outlet />`. Wrap protected `<Route>`s inside it. Prefer this over `<SignedIn>/<SignedOut>`.
 - Sign-up link hidden via `appearance.elements.footerAction: { display: "none" }`. Users are created in the Clerk dashboard (invite / restricted). Do not add a sign-up page.
 - Sign-out (`<UserButton>`) → `/` (`afterSignOutUrl`).
 - Dev needs `VITE_CLERK_PUBLISHABLE_KEY=pk_...` in `.env.local`.
@@ -88,9 +88,9 @@ Package is `@clerk/react`. Router is **react-router-dom v7**.
 ## CMS
 
 Content collections live behind the admin. Data fetching/mutations use **TanStack
-Query** (`QueryClientProvider` in `main.tsx`, `src/lib/queryClient.ts`).
+Query** (`QueryClientProvider` in `main.tsx`, `src/lib/query-client.ts`).
 
-- **Registry**: `src/cms/collections.ts` — array of `{ slug, label, description, path, icon }`. Drives the admin sidebar (`components/admin/AppSidebar.tsx`) and dashboard grid (`components/admin/CollectionGrid.tsx`).
+- **Registry**: `src/cms/collections.ts` — array of `{ slug, label, description, path, icon }`. Drives the admin sidebar (`components/admin/app-sidebar.tsx`) and dashboard grid (`components/admin/collection-grid.tsx`).
 - **Per-collection service file**: `src/services/<slug>.ts` — one file holding the zod `schema` (at top) + React Query hooks. Supabase CRUD is **inlined inside each `queryFn`/`mutationFn`** (no separate `api.ts`); mutations carry toasts + `["<slug>"]` invalidation. Blog is the reference (`src/services/blog.ts`).
 - **Types are global**: `src/types/index.d.ts` — ambient declarations (no top-level `import`/`export`), so `Post`, `PostInput`, etc. are available everywhere without importing. They're aliased from the generated `database.types.ts` (see Database section) via inline `import(...)` types, keeping them DB-accurate.
 - **Admin pages**: `src/pages/admin/` — `Dashboard`, `CmsHome`, `PostsList` (shadcn Table + row actions + AlertDialog delete), `PostEditor` (react-hook-form + zod + shadcn Input/Textarea/Switch; create & edit).
@@ -137,6 +137,7 @@ Never commit secrets. No service-role key client-side.
 
 - React 19 + React Compiler on — **do not** hand-add `useMemo`/`useCallback`/`memo` for perf; compiler handles memoization. Add only for semantic reasons.
 - Functional components + hooks. TS strict.
+- **Filenames are lowercase `kebab-case`** — every file under `src/` (components, pages, layouts, services, lib). E.g. `post-editor.tsx`, `app-sidebar.tsx`, `admin-layout.tsx`, `query-client.ts`, `ali-samadi.ts`. **No PascalCase or camelCase filenames.** Export identifiers keep their normal casing (component/hook `PascalCase`/`camelCase`) — only the filename is kebab-case.
 - Imports: use `@/` alias for `src/`. Prettier auto-sorts import order (`@ianvs/prettier-plugin-sort-imports`) and Tailwind classes (`prettier-plugin-tailwindcss`).
 - Formatting: double quotes, semicolons, 2-space, `trailingComma: es5` — config in `.prettierrc`. Run `pnpm format` before done.
 - Run `pnpm lint` before done.
