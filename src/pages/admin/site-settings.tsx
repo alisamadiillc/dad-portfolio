@@ -71,12 +71,20 @@ function SettingsForm({ settings }: { settings: SiteSettings }) {
   });
 
   const avatarUrl = watch("avatar_url");
+  // Instant local preview (object URL) shown while the file uploads.
+  const [preview, setPreview] = useState<string | null>(null);
+  const displaySrc = preview ?? avatarUrl;
 
   const onPickFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = "";
     if (!file) return;
     const previousSaved = savedAvatar;
+    // Show the picked file immediately from local memory, before it uploads.
+    setPreview((old) => {
+      if (old) URL.revokeObjectURL(old);
+      return URL.createObjectURL(file);
+    });
     upload.mutate(
       { file, path: AVATAR_PATH },
       {
@@ -159,13 +167,18 @@ function SettingsForm({ settings }: { settings: SiteSettings }) {
               onChange={onPickFile}
             />
             <div className="flex items-center gap-4">
-              <div className="bg-secondary ring-border size-20 shrink-0 overflow-hidden rounded-full ring-1">
-                {avatarUrl ? (
+              <div className="bg-secondary ring-border relative size-20 shrink-0 overflow-hidden rounded-full ring-1">
+                {displaySrc ? (
                   <img
-                    src={avatarUrl}
+                    src={displaySrc}
                     alt="Avatar preview"
                     className="size-full object-cover"
                   />
+                ) : null}
+                {upload.isPending ? (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                    <Loader2 className="size-5 animate-spin text-white" />
+                  </div>
                 ) : null}
               </div>
               <div className="flex gap-2">
@@ -184,19 +197,24 @@ function SettingsForm({ settings }: { settings: SiteSettings }) {
                   ) : (
                     <>
                       <ImagePlus className="size-4" />
-                      {avatarUrl ? "Change" : "Upload"}
+                      {displaySrc ? "Change" : "Upload"}
                     </>
                   )}
                 </Button>
-                {avatarUrl ? (
+                {displaySrc ? (
                   <Button
                     type="button"
                     variant="ghost"
                     size="icon-sm"
                     aria-label="Remove avatar"
-                    onClick={() =>
-                      setValue("avatar_url", "", { shouldValidate: true })
-                    }
+                    disabled={upload.isPending}
+                    onClick={() => {
+                      setPreview((old) => {
+                        if (old) URL.revokeObjectURL(old);
+                        return null;
+                      });
+                      setValue("avatar_url", "", { shouldValidate: true });
+                    }}
                   >
                     <X className="size-4" />
                   </Button>

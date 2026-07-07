@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ImagePlus, Loader2, X } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -37,13 +37,27 @@ export function ProjectDialog({
   onOpenChange: (open: boolean) => void;
   row?: Project | null;
 }) {
+  // The form registers a cleanup that removes any uploaded-but-unsaved image.
+  const cleanupRef = useRef<() => void>(() => {});
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={(next) => {
+        // Any close path (Cancel, Esc, backdrop) that isn't a save discards
+        // uploads that never made it into the database.
+        if (!next) cleanupRef.current();
+        onOpenChange(next);
+      }}
+    >
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>{row ? "Edit project" : "New project"}</DialogTitle>
         </DialogHeader>
-        <ProjectForm row={row} onDone={() => onOpenChange(false)} />
+        <ProjectForm
+          row={row}
+          onDone={() => onOpenChange(false)}
+          cleanupRef={cleanupRef}
+        />
       </DialogContent>
     </Dialog>
   );
@@ -52,14 +66,19 @@ export function ProjectDialog({
 function ProjectForm({
   row,
   onDone,
+  cleanupRef,
 }: {
   row?: Project | null;
   onDone: () => void;
+  cleanupRef: React.RefObject<() => void>;
 }) {
   const createRow = useCreateProject();
   const updateRow = useUpdateProject();
   const upload = useUploadFile();
   const fileRef = useRef<HTMLInputElement>(null);
+  // URL of an image uploaded this session but not yet saved to the DB. Any such
+  // image is deleted from storage when superseded, removed, or the dialog closes.
+  const uncommittedRef = useRef<string | null>(null);
 
   const {
     register,
@@ -79,26 +98,51 @@ function ProjectForm({
 
   const coverUrl = watch("cover_image_url");
   const originalUrl = row?.cover_image_url ?? "";
+  // Instant local preview (object URL) shown while the file uploads.
+  const [preview, setPreview] = useState<string | null>(null);
+  const displaySrc = preview ?? coverUrl;
+
+  // Delete the current uploaded-but-unsaved image, if any. Idempotent.
+  const discardUncommitted = () => {
+    if (uncommittedRef.current) {
+      void deleteStorageObject(uncommittedRef.current);
+      uncommittedRef.current = null;
+    }
+  };
+  // Registered on the dialog so closing without saving cleans up the orphan.
+  cleanupRef.current = discardUncommitted;
 
   const onPickFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = ""; // allow re-selecting the same file
     if (!file) return;
-    const previous = coverUrl; // may be a this-session upload we're superseding
+    // Show the picked file immediately from local memory, before it uploads.
+    setPreview((old) => {
+      if (old) URL.revokeObjectURL(old);
+      return URL.createObjectURL(file);
+    });
     upload.mutate(
       { file, path: UPLOAD_PATH },
       {
         onSuccess: (res) => {
           if (!res.publicUrl) return;
-          // Drop an orphaned upload made earlier in this same session (but keep
-          // the original saved image — it's only cleaned up on a successful save).
-          if (previous && previous !== originalUrl) {
-            void deleteStorageObject(previous);
-          }
+          // Supersede a prior unsaved upload from this session.
+          discardUncommitted();
+          uncommittedRef.current = res.publicUrl;
           setValue("cover_image_url", res.publicUrl, { shouldValidate: true });
         },
       }
     );
+  };
+
+  const clearImage = () => {
+    // Removing an unsaved upload deletes it from storage right away.
+    discardUncommitted();
+    setPreview((old) => {
+      if (old) URL.revokeObjectURL(old);
+      return null;
+    });
+    setValue("cover_image_url", "", { shouldValidate: true });
   };
 
   const onSubmit = handleSubmit((values) => {
@@ -115,6 +159,8 @@ function ProjectForm({
         { id: row.id, input },
         {
           onSuccess: () => {
+            // The uploaded image is now saved — no longer an orphan.
+            uncommittedRef.current = null;
             // Old cover was replaced (or cleared) — remove it from storage.
             if (originalUrl && originalUrl !== input.cover_image_url) {
               void deleteStorageObject(originalUrl);
@@ -124,7 +170,12 @@ function ProjectForm({
         }
       );
     } else {
-      createRow.mutate(input, { onSuccess: onDone });
+      createRow.mutate(input, {
+        onSuccess: () => {
+          uncommittedRef.current = null;
+          onDone();
+        },
+      });
     }
   });
 
@@ -147,13 +198,18 @@ function ProjectForm({
           onChange={onPickFile}
         />
 
-        {coverUrl ? (
+        {displaySrc ? (
           <div className="border-border relative overflow-hidden rounded-lg border">
             <img
-              src={coverUrl}
+              src={displaySrc}
               alt="Cover preview"
               className="aspect-[4/3] w-full object-cover"
             />
+            {upload.isPending ? (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                <Loader2 className="size-6 animate-spin text-white" />
+              </div>
+            ) : null}
             <div className="absolute top-2 right-2 flex gap-1">
               <Button
                 type="button"
@@ -169,9 +225,8 @@ function ProjectForm({
                 size="icon-sm"
                 variant="secondary"
                 aria-label="Remove image"
-                onClick={() =>
-                  setValue("cover_image_url", "", { shouldValidate: true })
-                }
+                disabled={upload.isPending}
+                onClick={clearImage}
               >
                 <X className="size-4" />
               </Button>

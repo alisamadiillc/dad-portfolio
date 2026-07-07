@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MoreHorizontal, Plus } from "lucide-react";
+import { Loader2, MoreHorizontal, Plus } from "lucide-react";
 
 import {
   AlertDialog,
@@ -137,7 +137,11 @@ export function ProjectsList() {
 
       <AlertDialog
         open={!!toDelete}
-        onOpenChange={(open) => !open && setToDelete(null)}
+        onOpenChange={(open) => {
+          // Don't let the dialog close mid-delete.
+          if (deleteRow.isPending) return;
+          if (!open) setToDelete(null);
+        }}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -148,9 +152,13 @@ export function ProjectsList() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={deleteRow.isPending}>
+              Cancel
+            </AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => {
+              disabled={deleteRow.isPending}
+              onClick={(e) => {
+                e.preventDefault(); // keep the dialog open until the delete settles
                 if (toDelete)
                   deleteRow.mutate(
                     { id: toDelete.id, imageUrl: toDelete.cover_image_url },
@@ -158,7 +166,14 @@ export function ProjectsList() {
                   );
               }}
             >
-              Delete
+              {deleteRow.isPending ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" />
+                  Deleting…
+                </>
+              ) : (
+                "Delete"
+              )}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
