@@ -1,4 +1,4 @@
-import { LayoutDashboard } from "lucide-react";
+import { LayoutDashboard, UserCog } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 import {
@@ -34,6 +34,15 @@ export function AppSidebar() {
                 >
                   <LayoutDashboard />
                   <span>Dashboard</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  isActive={pathname === "/admin/settings"}
+                  render={<Link to="/admin/settings" />}
+                >
+                  <UserCog />
+                  <span>Site settings</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>

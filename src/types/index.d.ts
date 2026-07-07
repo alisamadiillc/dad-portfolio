@@ -21,3 +21,8 @@ type Project =
   import("./database.types").Database["public"]["Tables"]["projects"]["Row"];
 type ProjectInput =
   import("./database.types").Database["public"]["Tables"]["projects"]["Insert"];
+
+type SiteSettings =
+  import("./database.types").Database["public"]["Tables"]["site_settings"]["Row"];
+type SiteSettingsInput =
+  import("./database.types").Database["public"]["Tables"]["site_settings"]["Update"];

@@ -152,9 +152,10 @@ export function ProjectsList() {
             <AlertDialogAction
               onClick={() => {
                 if (toDelete)
-                  deleteRow.mutate(toDelete.id, {
-                    onSettled: () => setToDelete(null),
-                  });
+                  deleteRow.mutate(
+                    { id: toDelete.id, imageUrl: toDelete.cover_image_url },
+                    { onSettled: () => setToDelete(null) }
+                  );
               }}
             >
               Delete

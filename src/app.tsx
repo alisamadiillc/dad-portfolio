@@ -10,6 +10,7 @@ import { ExperienceList } from "@/pages/admin/experience-list";
 import { PostEditor } from "@/pages/admin/post-editor";
 import { PostsList } from "@/pages/admin/posts-list";
 import { ProjectsList } from "@/pages/admin/projects-list";
+import { SiteSettings } from "@/pages/admin/site-settings";
 import { SkillsList } from "@/pages/admin/skills-list";
 import { BlogList } from "@/pages/blog/blog-list";
 import { BlogPost } from "@/pages/blog/blog-post";
@@ -44,6 +45,7 @@ function AdminApp() {
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<AdminLayout />}>
             <Route index element={<Dashboard />} />
+            <Route path="settings" element={<SiteSettings />} />
             <Route path="cms" element={<CmsHome />} />
             <Route path="cms/experience" element={<ExperienceList />} />
             <Route path="cms/skills" element={<SkillsList />} />

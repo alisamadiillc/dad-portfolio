@@ -16,17 +16,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
-import { useUploadFile } from "@/services/ali-samadi";
 import {
   projectSchema,
   useCreateProject,
   useUpdateProject,
   type ProjectFormValues,
 } from "@/services/projects";
+import { deleteStorageObject, useUploadFile } from "@/services/storage";
 
-// Client's R2 bucket (registered public in the agency-api). Cover images upload
-// here; the presign returns a durable public URL we store in cover_image_url.
-const UPLOAD_BUCKET = "samadi-home-renovation";
+// Cover images upload to the `media` bucket under this folder prefix; the upload
+// returns a durable public URL we store in cover_image_url.
 const UPLOAD_PATH = "projects";
 
 export function ProjectDialog({
@@ -79,20 +78,24 @@ function ProjectForm({
   });
 
   const coverUrl = watch("cover_image_url");
+  const originalUrl = row?.cover_image_url ?? "";
 
   const onPickFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = ""; // allow re-selecting the same file
     if (!file) return;
+    const previous = coverUrl; // may be a this-session upload we're superseding
     upload.mutate(
-      { file, bucket: UPLOAD_BUCKET, path: UPLOAD_PATH },
+      { file, path: UPLOAD_PATH },
       {
         onSuccess: (res) => {
-          if (res.publicUrl) {
-            setValue("cover_image_url", res.publicUrl, {
-              shouldValidate: true,
-            });
+          if (!res.publicUrl) return;
+          // Drop an orphaned upload made earlier in this same session (but keep
+          // the original saved image — it's only cleaned up on a successful save).
+          if (previous && previous !== originalUrl) {
+            void deleteStorageObject(previous);
           }
+          setValue("cover_image_url", res.publicUrl, { shouldValidate: true });
         },
       }
     );
@@ -108,7 +111,18 @@ function ProjectForm({
       sort_order: values.sort_order,
     };
     if (row) {
-      updateRow.mutate({ id: row.id, input }, { onSuccess: onDone });
+      updateRow.mutate(
+        { id: row.id, input },
+        {
+          onSuccess: () => {
+            // Old cover was replaced (or cleared) — remove it from storage.
+            if (originalUrl && originalUrl !== input.cover_image_url) {
+              void deleteStorageObject(originalUrl);
+            }
+            onDone();
+          },
+        }
+      );
     } else {
       createRow.mutate(input, { onSuccess: onDone });
     }

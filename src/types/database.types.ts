@@ -116,6 +116,63 @@ export type Database = {
         };
         Relationships: [];
       };
+      site_settings: {
+        Row: {
+          about: string | null;
+          availability_label: string | null;
+          avatar_url: string | null;
+          contact_heading: string | null;
+          contact_subtext: string | null;
+          email: string | null;
+          footer_text: string | null;
+          headline: string | null;
+          hero_bio: string | null;
+          id: string;
+          location: string | null;
+          name: string;
+          phone: string | null;
+          short_name: string;
+          updated_at: string;
+          years_experience: number | null;
+        };
+        Insert: {
+          about?: string | null;
+          availability_label?: string | null;
+          avatar_url?: string | null;
+          contact_heading?: string | null;
+          contact_subtext?: string | null;
+          email?: string | null;
+          footer_text?: string | null;
+          headline?: string | null;
+          hero_bio?: string | null;
+          id?: string;
+          location?: string | null;
+          name?: string;
+          phone?: string | null;
+          short_name?: string;
+          updated_at?: string;
+          years_experience?: number | null;
+        };
+        Update: {
+          about?: string | null;
+          availability_label?: string | null;
+          avatar_url?: string | null;
+          contact_heading?: string | null;
+          contact_subtext?: string | null;
+          email?: string | null;
+          footer_text?: string | null;
+          headline?: string | null;
+          hero_bio?: string | null;
+          id?: string;
+          location?: string | null;
+          name?: string;
+          phone?: string | null;
+          short_name?: string;
+          updated_at?: string;
+          years_experience?: number | null;
+        };
+        Relationships: [];
+      };
       skills: {
         Row: {
           created_at: string;

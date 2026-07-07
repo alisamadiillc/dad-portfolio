@@ -4,6 +4,8 @@ import { z } from "zod";
 
 import { supabase } from "@/lib/supabase";
 
+import { deleteStorageObject } from "@/services/storage";
+
 export const projectSchema = z.object({
   title: z.string().min(1, "Title is required"),
   cover_image_url: z
@@ -100,9 +102,17 @@ export const useUpdateProject = () => {
 export const useDeleteProject = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (id: string) => {
+    mutationFn: async ({
+      id,
+      imageUrl,
+    }: {
+      id: string;
+      imageUrl?: string | null;
+    }) => {
       const { error } = await supabase.from("projects").delete().eq("id", id);
       if (error) throw error;
+      // Clean up the cover image so storage doesn't accumulate orphans.
+      await deleteStorageObject(imageUrl);
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: KEY });

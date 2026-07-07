@@ -7,14 +7,23 @@ import { Button } from "@/components/ui/button";
 
 import { useExperiences } from "@/services/experience";
 import { useProjects } from "@/services/projects";
+import { useSiteSettings } from "@/services/site-settings";
 import { useSkills } from "@/services/skills";
 
-// Site owner contact details. Update these to the real phone / inbox.
-const NAME = "Mohammad Amin Samadi";
-const SHORT_NAME = "Mohammad A. Samadi";
-const PHONE = "(555) 000-0000";
-const PHONE_HREF = "tel:+15550000000";
-const EMAIL = "masamadi.sfr@email.com";
+type Content = {
+  name: string;
+  short_name: string;
+  avatar_url: string;
+  availability_label: string;
+  headline: string;
+  hero_bio: string;
+  about: string;
+  contact_heading: string;
+  contact_subtext: string;
+  email: string;
+  phone: string;
+  footer_text: string;
+};
 
 const NAV = [
   { label: "About", href: "#about" },
@@ -23,19 +32,52 @@ const NAV = [
   { label: "Contact", href: "#contact" },
 ];
 
+const telHref = (phone: string) => `tel:${phone.replace(/[^\d+]/g, "")}`;
+
 function Landing() {
+  const { data: settings, error } = useSiteSettings();
+
+  // Surface load failures as centered red text on an otherwise blank page.
+  if (error) {
+    return (
+      <div className="bg-background flex min-h-[100dvh] items-center justify-center px-5">
+        <p className="text-center text-sm text-red-600">
+          {error instanceof Error ? error.message : "Failed to load content."}
+        </p>
+      </div>
+    );
+  }
+
+  // Render nothing until the content loads — no placeholder copy flashes.
+  if (!settings) return <div className="bg-background min-h-[100dvh]" />;
+
+  const c: Content = {
+    name: settings.name ?? "",
+    short_name: settings.short_name ?? "",
+    avatar_url: settings.avatar_url ?? "",
+    availability_label: settings.availability_label ?? "",
+    headline: settings.headline ?? "",
+    hero_bio: settings.hero_bio ?? "",
+    about: settings.about ?? "",
+    contact_heading: settings.contact_heading ?? "",
+    contact_subtext: settings.contact_subtext ?? "",
+    email: settings.email ?? "",
+    phone: settings.phone ?? "",
+    footer_text: settings.footer_text ?? "",
+  };
+
   return (
     <div className="bg-background text-foreground relative min-h-[100dvh]">
-      <Nav />
+      <Nav c={c} />
       <main className="mx-auto max-w-2xl px-5">
-        <Hero />
-        <About />
+        <Hero c={c} />
+        <About c={c} />
         <ExperienceSection />
         <SkillsSection />
         <WorkSection />
-        <ContactSection />
+        <ContactSection c={c} />
       </main>
-      <Footer />
+      <Footer c={c} />
     </div>
   );
 }
@@ -75,12 +117,12 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
 
 /* --- Nav -------------------------------------------------------------------- */
 
-function Nav() {
+function Nav({ c }: { c: Content }) {
   return (
     <header className="border-border/60 bg-background/80 sticky top-0 z-40 border-b backdrop-blur">
       <div className="mx-auto flex h-16 max-w-2xl items-center justify-between px-5">
         <a href="#top" className="text-sm font-semibold tracking-tight">
-          {SHORT_NAME}
+          {c.short_name}
         </a>
         <nav className="hidden items-center gap-6 sm:flex">
           {NAV.map((item) => (
@@ -97,14 +139,14 @@ function Nav() {
           <Button
             variant="outline"
             size="icon-sm"
-            render={<a href={PHONE_HREF} aria-label="Call" />}
+            render={<a href={telHref(c.phone)} aria-label="Call" />}
           >
             <Phone className="size-4" />
           </Button>
           <Button
             variant="outline"
             size="icon-sm"
-            render={<a href={`mailto:${EMAIL}`} aria-label="Email" />}
+            render={<a href={`mailto:${c.email}`} aria-label="Email" />}
           >
             <Mail className="size-4" />
           </Button>
@@ -116,7 +158,7 @@ function Nav() {
 
 /* --- Hero ------------------------------------------------------------------- */
 
-function Hero() {
+function Hero({ c }: { c: Content }) {
   const reduce = useReducedMotion();
   return (
     <section id="top" className="relative pt-16 pb-20">
@@ -128,8 +170,8 @@ function Hero() {
         className="relative"
       >
         <img
-          src="https://cdn.samadihomerenovation.com/projects/mohammadsamadi.webp"
-          alt={NAME}
+          src={c.avatar_url}
+          alt={c.name}
           width={160}
           height={160}
           className="bg-secondary text-foreground ring-border flex size-24 items-center justify-center rounded-full object-cover text-lg font-semibold ring-1 md:size-32 lg:size-40"
@@ -138,18 +180,16 @@ function Hero() {
         <div className="mt-6">
           <span className="bg-foreground text-background inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium">
             <span className="size-1.5 rounded-full bg-emerald-400" />
-            Available for work · Florida
+            {c.availability_label}
           </span>
         </div>
 
         <h1 className="mt-6 text-4xl font-bold tracking-tight text-balance sm:text-5xl">
-          Remodeling &amp; handyman with 20+ years on the tools.
+          {c.headline}
         </h1>
 
         <p className="text-muted-foreground mt-5 max-w-xl leading-relaxed">
-          Hi, I&apos;m {NAME}. For over two decades I&apos;ve remodeled kitchens
-          and baths, built decks, and handled the repairs that keep Florida
-          homes running. Reliable, clean, and finished on schedule, every job.
+          {c.hero_bio}
         </p>
 
         <div className="mt-8 flex items-center gap-6">
@@ -197,22 +237,16 @@ function WavyBackground() {
 
 /* --- About ------------------------------------------------------------------ */
 
-function About() {
+function About({ c }: { c: Content }) {
+  const paragraphs = c.about.split(/\n\s*\n/).filter((p) => p.trim());
   return (
     <Section id="about">
       <Reveal>
         <Eyebrow>About</Eyebrow>
         <div className="text-foreground/90 space-y-4 leading-relaxed">
-          <p>
-            I work directly with homeowners and contractors across Florida, no
-            middlemen, no surprises. I show up when I say I will, keep the site
-            clean, and don&apos;t call a job done until it&apos;s right.
-          </p>
-          <p>
-            Whether it&apos;s a full kitchen gut or a long list of small fixes,
-            I bring the same care and craftsmanship I&apos;ve built over 20
-            years. Licensed, insured, and easy to work with.
-          </p>
+          {paragraphs.map((p, i) => (
+            <p key={i}>{p}</p>
+          ))}
         </div>
       </Reveal>
     </Section>
@@ -338,42 +372,41 @@ function WorkSection() {
 
 /* --- Contact ---------------------------------------------------------------- */
 
-function ContactSection() {
+function ContactSection({ c }: { c: Content }) {
   return (
     <Section id="contact">
       <Reveal>
         <Eyebrow>Contact</Eyebrow>
         <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-          Looking to hire? Let&apos;s talk.
+          {c.contact_heading}
         </h2>
         <p className="text-muted-foreground mt-4 max-w-md leading-relaxed">
-          Reach out anytime, happy to walk through my experience or come take a
-          look at a project.
+          {c.contact_subtext}
         </p>
 
         <div className="mt-8 grid gap-4 sm:grid-cols-2">
           <a
-            href={PHONE_HREF}
+            href={telHref(c.phone)}
             className="border-border hover:border-foreground/40 block rounded-lg border px-4 py-3 transition-colors"
           >
             <span className="text-muted-foreground block text-xs tracking-[0.18em] uppercase">
               Phone
             </span>
-            <span className="mt-1 block font-medium">{PHONE}</span>
+            <span className="mt-1 block font-medium">{c.phone}</span>
           </a>
           <a
-            href={`mailto:${EMAIL}`}
+            href={`mailto:${c.email}`}
             className="border-border hover:border-foreground/40 block rounded-lg border px-4 py-3 transition-colors"
           >
             <span className="text-muted-foreground block text-xs tracking-[0.18em] uppercase">
               Email
             </span>
-            <span className="mt-1 block font-medium">{EMAIL}</span>
+            <span className="mt-1 block font-medium">{c.email}</span>
           </a>
         </div>
 
         <div className="mt-8">
-          <Button size="lg" render={<a href={`mailto:${EMAIL}`} />}>
+          <Button size="lg" render={<a href={`mailto:${c.email}`} />}>
             Email me
             <ArrowRight className="size-4" />
           </Button>
@@ -385,11 +418,11 @@ function ContactSection() {
 
 /* --- Footer ----------------------------------------------------------------- */
 
-function Footer() {
+function Footer({ c }: { c: Content }) {
   return (
     <footer className="border-border/60 mt-10 border-t">
       <div className="text-muted-foreground mx-auto max-w-2xl px-5 py-8 text-xs">
-        <p>© 2025 {NAME} · Remodeling &amp; Handyman · Florida</p>
+        <p>{c.footer_text}</p>
       </div>
     </footer>
   );
