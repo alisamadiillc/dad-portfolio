@@ -29,10 +29,13 @@ import {
 } from "@/components/ui/table";
 import { ExperienceDialog } from "@/components/admin/experience-dialog";
 
-import { useDeleteExperience, useExperiences } from "@/services/experience";
+import {
+  useAdminExperiences,
+  useDeleteExperience,
+} from "@/services/experience";
 
 export function ExperienceList() {
-  const { data: rows, isLoading } = useExperiences();
+  const { data: rows, isLoading } = useAdminExperiences();
   const deleteRow = useDeleteExperience();
   const [toDelete, setToDelete] = useState<Experience | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);

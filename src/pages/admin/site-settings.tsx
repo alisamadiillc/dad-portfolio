@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 
 import {
   siteSettingsSchema,
-  useSiteSettings,
+  useAdminSiteSettings,
   useUpdateSiteSettings,
   type SiteSettingsFormValues,
 } from "@/services/site-settings";
@@ -21,7 +21,7 @@ import { deleteStorageObject, useUploadFile } from "@/services/storage";
 const AVATAR_PATH = "avatar";
 
 export function SiteSettings() {
-  const { data: settings, isLoading } = useSiteSettings();
+  const { data: settings, isLoading } = useAdminSiteSettings();
 
   if (isLoading) return <Skeleton className="h-96 w-full" />;
 

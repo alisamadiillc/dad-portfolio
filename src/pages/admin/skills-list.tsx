@@ -29,10 +29,10 @@ import {
 } from "@/components/ui/table";
 import { SkillDialog } from "@/components/admin/skill-dialog";
 
-import { useDeleteSkill, useSkills } from "@/services/skills";
+import { useAdminSkills, useDeleteSkill } from "@/services/skills";
 
 export function SkillsList() {
-  const { data: rows, isLoading } = useSkills();
+  const { data: rows, isLoading } = useAdminSkills();
   const deleteRow = useDeleteSkill();
   const [toDelete, setToDelete] = useState<Skill | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);

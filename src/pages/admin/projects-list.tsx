@@ -29,10 +29,10 @@ import {
 } from "@/components/ui/table";
 import { ProjectDialog } from "@/components/admin/project-dialog";
 
-import { useDeleteProject, useProjects } from "@/services/projects";
+import { useAdminProjects, useDeleteProject } from "@/services/projects";
 
 export function ProjectsList() {
-  const { data: rows, isLoading } = useProjects();
+  const { data: rows, isLoading } = useAdminProjects();
   const deleteRow = useDeleteProject();
   const [toDelete, setToDelete] = useState<Project | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);

@@ -1,8 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation as useConvexMutation,
+  useQuery as useConvexQuery,
+} from "convex/react";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import { supabase } from "@/lib/supabase";
+import { convexHttp, toRow } from "@/lib/convex";
+
+import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 
 export const experienceSchema = z.object({
   period: z.string().min(1, "Period is required"),
@@ -24,42 +31,34 @@ export const useExperiences = () =>
   useQuery({
     queryKey: KEY,
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("experience")
-        .select("*")
-        .order("sort_order", { ascending: true });
-      if (error) throw error;
-      return data ?? [];
+      const rows = await convexHttp.query(api.experience.list, {});
+      return rows.map(toRow);
     },
   });
+
+// Admin page read — reactive + Clerk-authenticated.
+export const useAdminExperiences = () => {
+  const rows = useConvexQuery(api.experience.adminList);
+  return { data: rows?.map(toRow), isLoading: rows === undefined };
+};
 
 export const useExperienceById = (id?: string) =>
   useQuery({
     queryKey: [...KEY, "id", id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("experience")
-        .select("*")
-        .eq("id", id!)
-        .maybeSingle();
-      if (error) throw error;
-      return data;
+      const row = await convexHttp.query(api.experience.getById, {
+        id: id as Id<"experience">,
+      });
+      return row ? toRow(row) : null;
     },
     enabled: !!id,
   });
 
 export const useCreateExperience = () => {
   const qc = useQueryClient();
+  const create = useConvexMutation(api.experience.create);
   return useMutation({
-    mutationFn: async (input: ExperienceInput) => {
-      const { data, error } = await supabase
-        .from("experience")
-        .insert(input)
-        .select()
-        .single();
-      if (error) throw error;
-      return data;
-    },
+    mutationFn: (input: ExperienceInput) => create(input),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: KEY });
       toast.success("Experience created");
@@ -70,23 +69,15 @@ export const useCreateExperience = () => {
 
 export const useUpdateExperience = () => {
   const qc = useQueryClient();
+  const update = useConvexMutation(api.experience.update);
   return useMutation({
-    mutationFn: async ({
+    mutationFn: ({
       id,
       input,
     }: {
       id: string;
       input: Partial<ExperienceInput>;
-    }) => {
-      const { data, error } = await supabase
-        .from("experience")
-        .update({ ...input, updated_at: new Date().toISOString() })
-        .eq("id", id)
-        .select()
-        .single();
-      if (error) throw error;
-      return data;
-    },
+    }) => update({ id: id as Id<"experience">, input }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: KEY });
       toast.success("Experience updated");
@@ -97,10 +88,10 @@ export const useUpdateExperience = () => {
 
 export const useDeleteExperience = () => {
   const qc = useQueryClient();
+  const remove = useConvexMutation(api.experience.remove);
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("experience").delete().eq("id", id);
-      if (error) throw error;
+      await remove({ id: id as Id<"experience"> });
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: KEY });

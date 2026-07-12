@@ -1,8 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation as useConvexMutation,
+  useQuery as useConvexQuery,
+} from "convex/react";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import { supabase } from "@/lib/supabase";
+import { convexHttp, toRow } from "@/lib/convex";
+
+import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 
 export const skillSchema = z.object({
   label: z.string().min(1, "Label is required"),
@@ -20,42 +27,34 @@ export const useSkills = () =>
   useQuery({
     queryKey: KEY,
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("skills")
-        .select("*")
-        .order("sort_order", { ascending: true });
-      if (error) throw error;
-      return data ?? [];
+      const rows = await convexHttp.query(api.skills.list, {});
+      return rows.map(toRow);
     },
   });
+
+// Admin page read — reactive + Clerk-authenticated.
+export const useAdminSkills = () => {
+  const rows = useConvexQuery(api.skills.adminList);
+  return { data: rows?.map(toRow), isLoading: rows === undefined };
+};
 
 export const useSkillById = (id?: string) =>
   useQuery({
     queryKey: [...KEY, "id", id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("skills")
-        .select("*")
-        .eq("id", id!)
-        .maybeSingle();
-      if (error) throw error;
-      return data;
+      const row = await convexHttp.query(api.skills.getById, {
+        id: id as Id<"skills">,
+      });
+      return row ? toRow(row) : null;
     },
     enabled: !!id,
   });
 
 export const useCreateSkill = () => {
   const qc = useQueryClient();
+  const create = useConvexMutation(api.skills.create);
   return useMutation({
-    mutationFn: async (input: SkillInput) => {
-      const { data, error } = await supabase
-        .from("skills")
-        .insert(input)
-        .select()
-        .single();
-      if (error) throw error;
-      return data;
-    },
+    mutationFn: (input: SkillInput) => create(input),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: KEY });
       toast.success("Skill created");
@@ -66,23 +65,10 @@ export const useCreateSkill = () => {
 
 export const useUpdateSkill = () => {
   const qc = useQueryClient();
+  const update = useConvexMutation(api.skills.update);
   return useMutation({
-    mutationFn: async ({
-      id,
-      input,
-    }: {
-      id: string;
-      input: Partial<SkillInput>;
-    }) => {
-      const { data, error } = await supabase
-        .from("skills")
-        .update({ ...input, updated_at: new Date().toISOString() })
-        .eq("id", id)
-        .select()
-        .single();
-      if (error) throw error;
-      return data;
-    },
+    mutationFn: ({ id, input }: { id: string; input: Partial<SkillInput> }) =>
+      update({ id: id as Id<"skills">, input }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: KEY });
       toast.success("Skill updated");
@@ -93,10 +79,10 @@ export const useUpdateSkill = () => {
 
 export const useDeleteSkill = () => {
   const qc = useQueryClient();
+  const remove = useConvexMutation(api.skills.remove);
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("skills").delete().eq("id", id);
-      if (error) throw error;
+      await remove({ id: id as Id<"skills"> });
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: KEY });

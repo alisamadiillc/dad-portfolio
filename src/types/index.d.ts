@@ -1,28 +1,64 @@
 // Global ambient types (no import/export at top level → script scope).
-// Derived from the Supabase-generated schema so they stay in sync with the DB.
-// Regenerate the source with `pnpm db:types`.
+// Derived from the Convex-generated data model (convex/_generated/dataModel,
+// regenerated automatically by `pnpm convex:dev`). Field names stay snake_case
+// in the schema; `toRow()` in src/lib/convex.ts adds the `id`/`created_at`
+// aliases these row types include.
 
-type Post =
-  import("./database.types").Database["public"]["Tables"]["posts"]["Row"];
-type PostInput =
-  import("./database.types").Database["public"]["Tables"]["posts"]["Insert"];
+type PostDoc = import("../../convex/_generated/dataModel").Doc<"posts">;
+type Post = PostDoc & { id: string; created_at: number };
+type PostInput = {
+  title: string;
+  slug: string;
+  excerpt?: string | null;
+  content: string;
+  cover_image_url?: string | null;
+  published: boolean;
+};
 
-type Experience =
-  import("./database.types").Database["public"]["Tables"]["experience"]["Row"];
-type ExperienceInput =
-  import("./database.types").Database["public"]["Tables"]["experience"]["Insert"];
+type ExperienceDoc =
+  import("../../convex/_generated/dataModel").Doc<"experience">;
+type Experience = ExperienceDoc & { id: string; created_at: number };
+type ExperienceInput = {
+  role: string;
+  company?: string | null;
+  location?: string | null;
+  description?: string | null;
+  period: string;
+  sort_order: number;
+};
 
-type Skill =
-  import("./database.types").Database["public"]["Tables"]["skills"]["Row"];
-type SkillInput =
-  import("./database.types").Database["public"]["Tables"]["skills"]["Insert"];
+type SkillDoc = import("../../convex/_generated/dataModel").Doc<"skills">;
+type Skill = SkillDoc & { id: string; created_at: number };
+type SkillInput = {
+  label: string;
+  sort_order: number;
+};
 
-type Project =
-  import("./database.types").Database["public"]["Tables"]["projects"]["Row"];
-type ProjectInput =
-  import("./database.types").Database["public"]["Tables"]["projects"]["Insert"];
+type ProjectDoc = import("../../convex/_generated/dataModel").Doc<"projects">;
+type Project = ProjectDoc & { id: string; created_at: number };
+type ProjectInput = {
+  title: string;
+  description?: string | null;
+  cover_image_url?: string | null;
+  sort_order: number;
+};
 
-type SiteSettings =
-  import("./database.types").Database["public"]["Tables"]["site_settings"]["Row"];
-type SiteSettingsInput =
-  import("./database.types").Database["public"]["Tables"]["site_settings"]["Update"];
+type SiteSettingsDoc =
+  import("../../convex/_generated/dataModel").Doc<"site_settings">;
+type SiteSettings = SiteSettingsDoc & { id: string; created_at: number };
+type SiteSettingsInput = {
+  name?: string;
+  short_name?: string | null;
+  avatar_url?: string | null;
+  availability_label?: string | null;
+  location?: string | null;
+  years_experience?: number | null;
+  headline?: string | null;
+  hero_bio?: string | null;
+  about?: string | null;
+  contact_heading?: string | null;
+  contact_subtext?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  footer_text?: string | null;
+};

@@ -1,10 +1,18 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation as useConvexMutation,
+  useQuery as useConvexQuery,
+} from "convex/react";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import { supabase } from "@/lib/supabase";
+import { convexHttp, toRow } from "@/lib/convex";
 
-// Singleton row — seeded once via SQL. No create/delete, only read + update.
+import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
+
+// Singleton row — seeded once (api.siteSettings.seed). No create/delete, only
+// read + update.
 export const siteSettingsSchema = z.object({
   name: z.string().min(1, "Name is required"),
   short_name: z.string().optional(),
@@ -37,35 +45,26 @@ export const useSiteSettings = () =>
   useQuery({
     queryKey: KEY,
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("site_settings")
-        .select("*")
-        .limit(1)
-        .maybeSingle();
-      if (error) throw error;
-      return data;
+      const row = await convexHttp.query(api.siteSettings.get, {});
+      return row ? toRow(row) : null;
     },
   });
 
+// Admin page read — reactive + Clerk-authenticated.
+export const useAdminSiteSettings = () => {
+  const row = useConvexQuery(api.siteSettings.adminGet);
+  return {
+    data: row ? toRow(row) : row,
+    isLoading: row === undefined,
+  };
+};
+
 export const useUpdateSiteSettings = () => {
   const qc = useQueryClient();
+  const update = useConvexMutation(api.siteSettings.update);
   return useMutation({
-    mutationFn: async ({
-      id,
-      input,
-    }: {
-      id: string;
-      input: SiteSettingsInput;
-    }) => {
-      const { data, error } = await supabase
-        .from("site_settings")
-        .update({ ...input, updated_at: new Date().toISOString() })
-        .eq("id", id)
-        .select()
-        .single();
-      if (error) throw error;
-      return data;
-    },
+    mutationFn: ({ id, input }: { id: string; input: SiteSettingsInput }) =>
+      update({ id: id as Id<"site_settings">, input }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: KEY });
       toast.success("Settings saved");

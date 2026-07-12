@@ -1,8 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation as useConvexMutation,
+  useQuery as useConvexQuery,
+} from "convex/react";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import { supabase } from "@/lib/supabase";
+import { convexHttp, toRow } from "@/lib/convex";
+
+import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 
 export const postSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -27,75 +34,50 @@ const KEY = ["posts"] as const;
 const errMsg = (e: unknown) =>
   e instanceof Error ? e.message : "Something went wrong";
 
+// Public reads go over the one-shot HTTP client (no websocket, no auth) via
+// TanStack Query; admin reads use the reactive Convex client, which carries
+// the Clerk token required by the auth-gated functions.
+
 export const usePublishedPosts = () =>
   useQuery({
     queryKey: [...KEY, "published"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("posts")
-        .select("*")
-        .eq("published", true)
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-      return data ?? [];
+      const posts = await convexHttp.query(api.posts.listPublished, {});
+      return posts.map(toRow);
     },
   });
 
-export const useAllPosts = () =>
-  useQuery({
-    queryKey: KEY,
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("posts")
-        .select("*")
-        .order("updated_at", { ascending: false });
-      if (error) throw error;
-      return data ?? [];
-    },
-  });
+export const useAllPosts = () => {
+  const posts = useConvexQuery(api.posts.list);
+  return { data: posts?.map(toRow), isLoading: posts === undefined };
+};
 
 export const usePostBySlug = (slug: string) =>
   useQuery({
     queryKey: [...KEY, "slug", slug],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("posts")
-        .select("*")
-        .eq("slug", slug)
-        .maybeSingle();
-      if (error) throw error;
-      return data;
+      const post = await convexHttp.query(api.posts.getBySlug, { slug });
+      return post ? toRow(post) : null;
     },
     enabled: !!slug,
   });
 
-export const usePostById = (id?: string) =>
-  useQuery({
-    queryKey: [...KEY, "id", id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("posts")
-        .select("*")
-        .eq("id", id!)
-        .maybeSingle();
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!id,
-  });
+export const usePostById = (id?: string) => {
+  const post = useConvexQuery(
+    api.posts.getById,
+    id ? { id: id as Id<"posts"> } : "skip"
+  );
+  return {
+    data: post ? toRow(post) : post,
+    isLoading: !!id && post === undefined,
+  };
+};
 
 export const useCreatePost = () => {
   const qc = useQueryClient();
+  const create = useConvexMutation(api.posts.create);
   return useMutation({
-    mutationFn: async (input: PostInput) => {
-      const { data, error } = await supabase
-        .from("posts")
-        .insert(input)
-        .select()
-        .single();
-      if (error) throw error;
-      return data;
-    },
+    mutationFn: (input: PostInput) => create(input),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: KEY });
       toast.success("Post created");
@@ -106,23 +88,10 @@ export const useCreatePost = () => {
 
 export const useUpdatePost = () => {
   const qc = useQueryClient();
+  const update = useConvexMutation(api.posts.update);
   return useMutation({
-    mutationFn: async ({
-      id,
-      input,
-    }: {
-      id: string;
-      input: Partial<PostInput>;
-    }) => {
-      const { data, error } = await supabase
-        .from("posts")
-        .update({ ...input, updated_at: new Date().toISOString() })
-        .eq("id", id)
-        .select()
-        .single();
-      if (error) throw error;
-      return data;
-    },
+    mutationFn: ({ id, input }: { id: string; input: Partial<PostInput> }) =>
+      update({ id: id as Id<"posts">, input }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: KEY });
       toast.success("Post updated");
@@ -133,10 +102,10 @@ export const useUpdatePost = () => {
 
 export const useDeletePost = () => {
   const qc = useQueryClient();
+  const remove = useConvexMutation(api.posts.remove);
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("posts").delete().eq("id", id);
-      if (error) throw error;
+      await remove({ id: id as Id<"posts"> });
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: KEY });
