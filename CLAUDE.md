@@ -74,7 +74,7 @@ Package is `@clerk/react`. Router is **react-router-dom v7**.
 
 ## Database — Convex
 
-- Deployment: `enchanted-deer-7` (prod), project `dad-portfolio`. `VITE_CONVEX_URL` in `.env.local`; `CONVEX_DEPLOY_KEY` (CLI-only, never `VITE_`-prefixed) for non-interactive deploy/import.
+- Project `dad-portfolio`: **prod = `insightful-mule-27`** (Vercel `VITE_CONVEX_URL`), **dev = `enchanted-deer-7`** (local `.env.local`). Deploy key format `prod:<deployment>|<token>` works for either deployment (token is project-scoped); `CONVEX_DEPLOY_KEY` is CLI-only, never `VITE_`-prefixed.
 - **Function-level auth is the trust boundary** (replaces Supabase RLS): every admin query/mutation calls `requireAuth(ctx)` (`convex/lib.ts`) before touching the db. Public functions (landing/blog reads) skip it and must expose only public data (e.g. `posts.getBySlug` returns null for drafts).
 - **Two clients** in `src/lib/convex.ts`:
   - `convex` (`ConvexReactClient`) — reactive websocket, **admin only**, wrapped by `ConvexProviderWithClerk` so Clerk's token reaches `ctx.auth.getUserIdentity()`.
