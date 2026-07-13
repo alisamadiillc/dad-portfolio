@@ -13,81 +13,69 @@ import { deleteStorageObject } from "@/services/storage";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 
-export const projectSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  cover_image_url: z
-    .string()
-    .url("Must be a valid URL")
-    .optional()
-    .or(z.literal("")),
+export const galleryImageSchema = z.object({
+  image_url: z.string().min(1, "Image is required").url("Must be a valid URL"),
   description: z.string().optional(),
 });
 
-export type ProjectFormValues = z.infer<typeof projectSchema>;
+export type GalleryImageFormValues = z.infer<typeof galleryImageSchema>;
 
-const KEY = ["projects"] as const;
+const KEY = ["gallery"] as const;
 
 const errMsg = (e: unknown) =>
   e instanceof Error ? e.message : "Something went wrong";
 
-export const useProjects = () =>
+export const useGallery = () =>
   useQuery({
     queryKey: KEY,
     queryFn: async () => {
-      const rows = await convexHttp.query(api.projects.list, {});
+      const rows = await convexHttp.query(api.gallery.list, {});
       return rows.map(toRow);
     },
   });
 
 // Admin page read — reactive + Clerk-authenticated. Renders nothing without a
 // valid JWT (the gated query throws Unauthorized).
-export const useAdminProjects = () => {
-  const rows = useConvexQuery(api.projects.adminList);
+export const useAdminGallery = () => {
+  const rows = useConvexQuery(api.gallery.adminList);
   return { data: rows?.map(toRow), isLoading: rows === undefined };
 };
 
-export const useProjectById = (id?: string) =>
-  useQuery({
-    queryKey: [...KEY, "id", id],
-    queryFn: async () => {
-      const row = await convexHttp.query(api.projects.getById, {
-        id: id as Id<"projects">,
-      });
-      return row ? toRow(row) : null;
-    },
-    enabled: !!id,
-  });
-
-export const useCreateProject = () => {
+export const useCreateGalleryImage = () => {
   const qc = useQueryClient();
-  const create = useConvexMutation(api.projects.create);
+  const create = useConvexMutation(api.gallery.create);
   return useMutation({
-    mutationFn: (input: ProjectInput) => create(input),
+    mutationFn: (input: GalleryImageInput) => create(input),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: KEY });
-      toast.success("Project created");
+      toast.success("Image added");
     },
     onError: (e) => toast.error(errMsg(e)),
   });
 };
 
-export const useUpdateProject = () => {
+export const useUpdateGalleryImage = () => {
   const qc = useQueryClient();
-  const update = useConvexMutation(api.projects.update);
+  const update = useConvexMutation(api.gallery.update);
   return useMutation({
-    mutationFn: ({ id, input }: { id: string; input: Partial<ProjectInput> }) =>
-      update({ id: id as Id<"projects">, input }),
+    mutationFn: ({
+      id,
+      input,
+    }: {
+      id: string;
+      input: Partial<GalleryImageInput>;
+    }) => update({ id: id as Id<"gallery">, input }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: KEY });
-      toast.success("Project updated");
+      toast.success("Image updated");
     },
     onError: (e) => toast.error(errMsg(e)),
   });
 };
 
-export const useDeleteProject = () => {
+export const useDeleteGalleryImage = () => {
   const qc = useQueryClient();
-  const remove = useConvexMutation(api.projects.remove);
+  const remove = useConvexMutation(api.gallery.remove);
   return useMutation({
     mutationFn: async ({
       id,
@@ -96,23 +84,23 @@ export const useDeleteProject = () => {
       id: string;
       imageUrl?: string | null;
     }) => {
-      await remove({ id: id as Id<"projects"> });
-      // Clean up the cover image so storage doesn't accumulate orphans.
+      await remove({ id: id as Id<"gallery"> });
+      // Clean up the stored image so storage doesn't accumulate orphans.
       await deleteStorageObject(imageUrl);
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: KEY });
-      toast.success("Project deleted");
+      toast.success("Image deleted");
     },
     onError: (e) => toast.error(errMsg(e)),
   });
 };
 
-export const useReorderProjects = () => {
+export const useReorderGallery = () => {
   const qc = useQueryClient();
-  const reorder = useConvexMutation(api.projects.reorder);
+  const reorder = useConvexMutation(api.gallery.reorder);
   return useMutation({
-    mutationFn: (ids: string[]) => reorder({ ids: ids as Id<"projects">[] }),
+    mutationFn: (ids: string[]) => reorder({ ids: ids as Id<"gallery">[] }),
     // Fires on every drop — invalidate silently, no toast.
     onSuccess: () => qc.invalidateQueries({ queryKey: KEY }),
     onError: (e) => toast.error(errMsg(e)),

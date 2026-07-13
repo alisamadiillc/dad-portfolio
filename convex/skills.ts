@@ -32,11 +32,20 @@ export const getById = query({
 export const create = mutation({
   args: {
     label: v.string(),
-    sort_order: v.number(),
   },
   handler: async (ctx, args) => {
     await requireAuth(ctx);
-    return ctx.db.insert("skills", { ...args, updated_at: Date.now() });
+    // New skills append to the end; ordering changes only via `reorder`.
+    const last = await ctx.db
+      .query("skills")
+      .withIndex("by_sort_order")
+      .order("desc")
+      .first();
+    return ctx.db.insert("skills", {
+      ...args,
+      sort_order: (last?.sort_order ?? -1) + 1,
+      updated_at: Date.now(),
+    });
   },
 });
 
@@ -45,7 +54,6 @@ export const update = mutation({
     id: v.id("skills"),
     input: v.object({
       label: v.optional(v.string()),
-      sort_order: v.optional(v.number()),
     }),
   },
   handler: async (ctx, { id, input }) => {
@@ -60,5 +68,17 @@ export const remove = mutation({
   handler: async (ctx, { id }) => {
     await requireAuth(ctx);
     await ctx.db.delete(id);
+  },
+});
+
+/** Persist a drag-reorder: each id's sort_order becomes its array index. */
+export const reorder = mutation({
+  args: { ids: v.array(v.id("skills")) },
+  handler: async (ctx, { ids }) => {
+    await requireAuth(ctx);
+    const now = Date.now();
+    await Promise.all(
+      ids.map((id, i) => ctx.db.patch(id, { sort_order: i, updated_at: now }))
+    );
   },
 });

@@ -13,7 +13,6 @@ import type { Id } from "../../convex/_generated/dataModel";
 
 export const skillSchema = z.object({
   label: z.string().min(1, "Label is required"),
-  sort_order: z.number().int(),
 });
 
 export type SkillFormValues = z.infer<typeof skillSchema>;
@@ -88,6 +87,17 @@ export const useDeleteSkill = () => {
       qc.invalidateQueries({ queryKey: KEY });
       toast.success("Skill deleted");
     },
+    onError: (e) => toast.error(errMsg(e)),
+  });
+};
+
+export const useReorderSkills = () => {
+  const qc = useQueryClient();
+  const reorder = useConvexMutation(api.skills.reorder);
+  return useMutation({
+    mutationFn: (ids: string[]) => reorder({ ids: ids as Id<"skills">[] }),
+    // Fires on every drop — invalidate silently, no toast.
+    onSuccess: () => qc.invalidateQueries({ queryKey: KEY }),
     onError: (e) => toast.error(errMsg(e)),
   });
 };

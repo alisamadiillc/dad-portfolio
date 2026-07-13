@@ -28,12 +28,18 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ProjectDialog } from "@/components/admin/project-dialog";
+import { ReorderTableBody } from "@/components/admin/reorder-table";
 
-import { useAdminProjects, useDeleteProject } from "@/services/projects";
+import {
+  useAdminProjects,
+  useDeleteProject,
+  useReorderProjects,
+} from "@/services/projects";
 
 export function ProjectsList() {
   const { data: rows, isLoading } = useAdminProjects();
   const deleteRow = useDeleteProject();
+  const reorder = useReorderProjects();
   const [toDelete, setToDelete] = useState<Project | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editRow, setEditRow] = useState<Project | null>(null);
@@ -53,7 +59,7 @@ export function ProjectsList() {
         <div>
           <h1 className="text-2xl font-semibold">Selected work</h1>
           <p className="text-muted-foreground">
-            Manage your featured projects.
+            Manage your featured projects. Drag rows to reorder.
           </p>
         </div>
         <Button onClick={openCreate}>
@@ -66,22 +72,24 @@ export function ProjectsList() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-0">Order</TableHead>
+              <TableHead className="w-0" />
               <TableHead>Title</TableHead>
               <TableHead>Image</TableHead>
               <TableHead className="w-0" />
             </TableRow>
           </TableHeader>
-          <TableBody>
-            {isLoading ? (
-              Array.from({ length: 3 }).map((_, i) => (
+          {isLoading ? (
+            <TableBody>
+              {Array.from({ length: 3 }).map((_, i) => (
                 <TableRow key={i}>
                   <TableCell colSpan={4}>
                     <Skeleton className="h-6 w-full" />
                   </TableCell>
                 </TableRow>
-              ))
-            ) : !rows?.length ? (
+              ))}
+            </TableBody>
+          ) : !rows?.length ? (
+            <TableBody>
               <TableRow>
                 <TableCell
                   colSpan={4}
@@ -90,12 +98,13 @@ export function ProjectsList() {
                   No projects yet. Add your first one.
                 </TableCell>
               </TableRow>
-            ) : (
-              rows.map((row) => (
-                <TableRow key={row.id}>
-                  <TableCell className="text-muted-foreground">
-                    {row.sort_order}
-                  </TableCell>
+            </TableBody>
+          ) : (
+            <ReorderTableBody
+              rows={rows}
+              onCommit={(ids) => reorder.mutate(ids)}
+              renderCells={(row) => (
+                <>
                   <TableCell className="font-medium">{row.title}</TableCell>
                   <TableCell className="text-muted-foreground">
                     {row.cover_image_url ? "Yes" : "-"}
@@ -122,10 +131,10 @@ export function ProjectsList() {
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
+                </>
+              )}
+            />
+          )}
         </Table>
       </div>
 

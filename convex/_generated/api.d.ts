@@ -8,21 +8,23 @@
  * @module
  */
 
-import type {
-  ApiFromModules,
-  FilterApi,
-  FunctionReference,
-} from "convex/server";
-
 import type * as experience from "../experience.js";
+import type * as gallery from "../gallery.js";
 import type * as lib from "../lib.js";
 import type * as posts from "../posts.js";
 import type * as projects from "../projects.js";
 import type * as siteSettings from "../siteSettings.js";
 import type * as skills from "../skills.js";
 
+import type {
+  ApiFromModules,
+  FilterApi,
+  FunctionReference,
+} from "convex/server";
+
 declare const fullApi: ApiFromModules<{
   experience: typeof experience;
+  gallery: typeof gallery;
   lib: typeof lib;
   posts: typeof posts;
   projects: typeof projects;

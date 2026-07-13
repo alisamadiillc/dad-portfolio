@@ -59,12 +59,11 @@ function SkillForm({
     resolver: zodResolver(skillSchema),
     defaultValues: {
       label: row?.label ?? "",
-      sort_order: row?.sort_order ?? 0,
     },
   });
 
   const onSubmit = handleSubmit((values) => {
-    const input = { label: values.label, sort_order: values.sort_order };
+    const input = { label: values.label };
     if (row) {
       updateRow.mutate({ id: row.id, input }, { onSuccess: onDone });
     } else {
@@ -78,14 +77,6 @@ function SkillForm({
     <form onSubmit={onSubmit} className="space-y-4">
       <Field label="Label" error={errors.label?.message}>
         <Input {...register("label")} placeholder="Kitchen & bath remodeling" />
-      </Field>
-
-      <Field label="Sort order" error={errors.sort_order?.message}>
-        <Input
-          type="number"
-          {...register("sort_order", { valueAsNumber: true })}
-          placeholder="0"
-        />
       </Field>
 
       <DialogFooter>

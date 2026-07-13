@@ -38,6 +38,13 @@ export default defineSchema({
     updated_at: v.number(),
   }).index("by_sort_order", ["sort_order"]),
 
+  gallery: defineTable({
+    image_url: v.string(),
+    description: v.optional(v.string()),
+    sort_order: v.number(),
+    updated_at: v.number(),
+  }).index("by_sort_order", ["sort_order"]),
+
   skills: defineTable({
     label: v.string(),
     sort_order: v.number(),

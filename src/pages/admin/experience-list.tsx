@@ -28,15 +28,18 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ExperienceDialog } from "@/components/admin/experience-dialog";
+import { ReorderTableBody } from "@/components/admin/reorder-table";
 
 import {
   useAdminExperiences,
   useDeleteExperience,
+  useReorderExperiences,
 } from "@/services/experience";
 
 export function ExperienceList() {
   const { data: rows, isLoading } = useAdminExperiences();
   const deleteRow = useDeleteExperience();
+  const reorder = useReorderExperiences();
   const [toDelete, setToDelete] = useState<Experience | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editRow, setEditRow] = useState<Experience | null>(null);
@@ -55,7 +58,9 @@ export function ExperienceList() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold">Experience</h1>
-          <p className="text-muted-foreground">Manage your work history.</p>
+          <p className="text-muted-foreground">
+            Manage your work history. Drag rows to reorder.
+          </p>
         </div>
         <Button onClick={openCreate}>
           <Plus />
@@ -67,23 +72,25 @@ export function ExperienceList() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-0">Order</TableHead>
+              <TableHead className="w-0" />
               <TableHead>Period</TableHead>
               <TableHead>Role</TableHead>
               <TableHead>Company</TableHead>
               <TableHead className="w-0" />
             </TableRow>
           </TableHeader>
-          <TableBody>
-            {isLoading ? (
-              Array.from({ length: 3 }).map((_, i) => (
+          {isLoading ? (
+            <TableBody>
+              {Array.from({ length: 3 }).map((_, i) => (
                 <TableRow key={i}>
                   <TableCell colSpan={5}>
                     <Skeleton className="h-6 w-full" />
                   </TableCell>
                 </TableRow>
-              ))
-            ) : !rows?.length ? (
+              ))}
+            </TableBody>
+          ) : !rows?.length ? (
+            <TableBody>
               <TableRow>
                 <TableCell
                   colSpan={5}
@@ -92,12 +99,13 @@ export function ExperienceList() {
                   No entries yet. Add your first one.
                 </TableCell>
               </TableRow>
-            ) : (
-              rows.map((row) => (
-                <TableRow key={row.id}>
-                  <TableCell className="text-muted-foreground">
-                    {row.sort_order}
-                  </TableCell>
+            </TableBody>
+          ) : (
+            <ReorderTableBody
+              rows={rows}
+              onCommit={(ids) => reorder.mutate(ids)}
+              renderCells={(row) => (
+                <>
                   <TableCell className="text-muted-foreground">
                     {row.period}
                   </TableCell>
@@ -127,10 +135,10 @@ export function ExperienceList() {
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
+                </>
+              )}
+            />
+          )}
         </Table>
       </div>
 

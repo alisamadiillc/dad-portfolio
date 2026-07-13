@@ -17,7 +17,6 @@ export const experienceSchema = z.object({
   company: z.string().optional(),
   location: z.string().optional(),
   description: z.string().optional(),
-  sort_order: z.number().int(),
 });
 
 export type ExperienceFormValues = z.infer<typeof experienceSchema>;
@@ -97,6 +96,17 @@ export const useDeleteExperience = () => {
       qc.invalidateQueries({ queryKey: KEY });
       toast.success("Experience deleted");
     },
+    onError: (e) => toast.error(errMsg(e)),
+  });
+};
+
+export const useReorderExperiences = () => {
+  const qc = useQueryClient();
+  const reorder = useConvexMutation(api.experience.reorder);
+  return useMutation({
+    mutationFn: (ids: string[]) => reorder({ ids: ids as Id<"experience">[] }),
+    // Fires on every drop — invalidate silently, no toast.
+    onSuccess: () => qc.invalidateQueries({ queryKey: KEY }),
     onError: (e) => toast.error(errMsg(e)),
   });
 };

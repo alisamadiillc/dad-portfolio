@@ -1,6 +1,7 @@
 import {
   Briefcase,
   FileText,
+  GalleryThumbnails,
   Hammer,
   Images,
   type LucideIcon,
@@ -41,6 +42,13 @@ export const collections: CmsCollection[] = [
     description: "Featured projects",
     path: "/admin/cms/projects",
     icon: Images,
+  },
+  {
+    slug: "gallery",
+    label: "Gallery",
+    description: "Photo gallery of work",
+    path: "/admin/cms/gallery",
+    icon: GalleryThumbnails,
   },
   {
     slug: "blog",

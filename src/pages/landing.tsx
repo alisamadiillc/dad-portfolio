@@ -4,8 +4,10 @@ import { motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
+import { LightboxImage } from "@/components/lightbox-image";
 
 import { useExperiences } from "@/services/experience";
+import { useGallery } from "@/services/gallery";
 import { useProjects } from "@/services/projects";
 import { useSiteSettings } from "@/services/site-settings";
 import { useSkills } from "@/services/skills";
@@ -29,6 +31,7 @@ const NAV = [
   { label: "About", href: "#about" },
   { label: "Experience", href: "#experience" },
   { label: "Work", href: "#work" },
+  { label: "Gallery", href: "#gallery" },
   { label: "Contact", href: "#contact" },
 ];
 
@@ -75,6 +78,9 @@ function Landing() {
         <ExperienceSection />
         <SkillsSection />
         <WorkSection />
+      </main>
+      <GallerySection />
+      <main className="mx-auto max-w-2xl px-5">
         <ContactSection c={c} />
       </main>
       <Footer c={c} />
@@ -350,10 +356,9 @@ function WorkSection() {
               <figure>
                 <div className="bg-secondary aspect-[4/3] overflow-hidden rounded-xl">
                   {row.cover_image_url && (
-                    <img
+                    <LightboxImage
                       src={row.cover_image_url}
                       alt={row.title}
-                      loading="lazy"
                       className="size-full object-cover"
                     />
                   )}
@@ -370,6 +375,43 @@ function WorkSection() {
   );
 }
 
+/* --- Gallery ---------------------------------------------------------------- */
+
+function GallerySection() {
+  const { data: rows } = useGallery();
+
+  // Optional section — render nothing until there are images to show.
+  if (!rows?.length) return null;
+
+  return (
+    <Section id="gallery">
+      <Reveal className="mx-auto max-w-2xl px-5">
+        <Eyebrow>Gallery</Eyebrow>
+      </Reveal>
+      <div className="mx-auto grid max-w-7xl gap-5 px-5 sm:grid-cols-2 md:grid-cols-3">
+        {rows.map((row, i) => (
+          <Reveal key={row.id} delay={i * 0.04}>
+            <figure className="relative overflow-hidden rounded-xl">
+              <div className="bg-secondary aspect-[4/3] overflow-hidden">
+                <LightboxImage
+                  src={row.image_url}
+                  alt={row.description || "Gallery image"}
+                  className="size-full object-cover"
+                />
+              </div>
+              {row.description && (
+                <figcaption className="pointer-events-none absolute right-0 bottom-0 left-0 bg-gradient-to-t from-black/70 to-transparent p-3 text-sm text-white md:text-base">
+                  {row.description}
+                </figcaption>
+              )}
+            </figure>
+          </Reveal>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
 /* --- Contact ---------------------------------------------------------------- */
 
 function ContactSection({ c }: { c: Content }) {
@@ -377,6 +419,7 @@ function ContactSection({ c }: { c: Content }) {
     <Section id="contact">
       <Reveal>
         <Eyebrow>Contact</Eyebrow>
+
         <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
           {c.contact_heading}
         </h2>

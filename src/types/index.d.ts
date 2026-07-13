@@ -24,14 +24,12 @@ type ExperienceInput = {
   location?: string | null;
   description?: string | null;
   period: string;
-  sort_order: number;
 };
 
 type SkillDoc = import("../../convex/_generated/dataModel").Doc<"skills">;
 type Skill = SkillDoc & { id: string; created_at: number };
 type SkillInput = {
   label: string;
-  sort_order: number;
 };
 
 type ProjectDoc = import("../../convex/_generated/dataModel").Doc<"projects">;
@@ -40,7 +38,14 @@ type ProjectInput = {
   title: string;
   description?: string | null;
   cover_image_url?: string | null;
-  sort_order: number;
+};
+
+type GalleryImageDoc =
+  import("../../convex/_generated/dataModel").Doc<"gallery">;
+type GalleryImage = GalleryImageDoc & { id: string; created_at: number };
+type GalleryImageInput = {
+  image_url: string;
+  description?: string | null;
 };
 
 type SiteSettingsDoc =

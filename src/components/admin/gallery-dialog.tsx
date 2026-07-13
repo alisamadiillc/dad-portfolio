@@ -12,30 +12,29 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
 import {
-  projectSchema,
-  useCreateProject,
-  useUpdateProject,
-  type ProjectFormValues,
-} from "@/services/projects";
+  galleryImageSchema,
+  useCreateGalleryImage,
+  useUpdateGalleryImage,
+  type GalleryImageFormValues,
+} from "@/services/gallery";
 import { deleteStorageObject, useUploadFile } from "@/services/storage";
 
-// Cover images upload to the `media` bucket under this folder prefix; the upload
-// returns a durable public URL we store in cover_image_url.
-const UPLOAD_PATH = "projects";
+// Gallery images upload under this folder prefix; the upload returns a
+// durable public URL we store in image_url.
+const UPLOAD_PATH = "gallery";
 
-export function ProjectDialog({
+export function GalleryDialog({
   open,
   onOpenChange,
   row,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  row?: Project | null;
+  row?: GalleryImage | null;
 }) {
   // The form registers a cleanup that removes any uploaded-but-unsaved image.
   const cleanupRef = useRef<() => void>(() => {});
@@ -51,9 +50,9 @@ export function ProjectDialog({
     >
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>{row ? "Edit project" : "New project"}</DialogTitle>
+          <DialogTitle>{row ? "Edit image" : "New image"}</DialogTitle>
         </DialogHeader>
-        <ProjectForm
+        <GalleryForm
           row={row}
           onDone={() => onOpenChange(false)}
           cleanupRef={cleanupRef}
@@ -63,17 +62,17 @@ export function ProjectDialog({
   );
 }
 
-function ProjectForm({
+function GalleryForm({
   row,
   onDone,
   cleanupRef,
 }: {
-  row?: Project | null;
+  row?: GalleryImage | null;
   onDone: () => void;
   cleanupRef: React.RefObject<() => void>;
 }) {
-  const createRow = useCreateProject();
-  const updateRow = useUpdateProject();
+  const createRow = useCreateGalleryImage();
+  const updateRow = useUpdateGalleryImage();
   const upload = useUploadFile();
   const fileRef = useRef<HTMLInputElement>(null);
   // URL of an image uploaded this session but not yet saved to the DB. Any such
@@ -86,20 +85,19 @@ function ProjectForm({
     setValue,
     watch,
     formState: { errors },
-  } = useForm<ProjectFormValues>({
-    resolver: zodResolver(projectSchema),
+  } = useForm<GalleryImageFormValues>({
+    resolver: zodResolver(galleryImageSchema),
     defaultValues: {
-      title: row?.title ?? "",
-      cover_image_url: row?.cover_image_url ?? "",
+      image_url: row?.image_url ?? "",
       description: row?.description ?? "",
     },
   });
 
-  const coverUrl = watch("cover_image_url");
-  const originalUrl = row?.cover_image_url ?? "";
+  const imageUrl = watch("image_url");
+  const originalUrl = row?.image_url ?? "";
   // Instant local preview (object URL) shown while the file uploads.
   const [preview, setPreview] = useState<string | null>(null);
-  const displaySrc = preview ?? coverUrl;
+  const displaySrc = preview ?? imageUrl;
 
   // Delete the current uploaded-but-unsaved image, if any. Idempotent.
   const discardUncommitted = () => {
@@ -128,7 +126,7 @@ function ProjectForm({
           // Supersede a prior unsaved upload from this session.
           discardUncommitted();
           uncommittedRef.current = res.publicUrl;
-          setValue("cover_image_url", res.publicUrl, { shouldValidate: true });
+          setValue("image_url", res.publicUrl, { shouldValidate: true });
         },
       }
     );
@@ -141,15 +139,12 @@ function ProjectForm({
       if (old) URL.revokeObjectURL(old);
       return null;
     });
-    setValue("cover_image_url", "", { shouldValidate: true });
+    setValue("image_url", "", { shouldValidate: true });
   };
 
   const onSubmit = handleSubmit((values) => {
     const input = {
-      title: values.title,
-      cover_image_url: values.cover_image_url?.trim()
-        ? values.cover_image_url
-        : null,
+      image_url: values.image_url,
       description: values.description?.trim() ? values.description : null,
     };
     if (row) {
@@ -159,8 +154,8 @@ function ProjectForm({
           onSuccess: () => {
             // The uploaded image is now saved — no longer an orphan.
             uncommittedRef.current = null;
-            // Old cover was replaced (or cleared) — remove it from storage.
-            if (originalUrl && originalUrl !== input.cover_image_url) {
+            // Old image was replaced — remove it from storage.
+            if (originalUrl && originalUrl !== input.image_url) {
               void deleteStorageObject(originalUrl);
             }
             onDone();
@@ -181,13 +176,9 @@ function ProjectForm({
 
   return (
     <form onSubmit={onSubmit} className="space-y-4">
-      <Field label="Title" error={errors.title?.message}>
-        <Input {...register("title")} placeholder="Kitchen Remodel" />
-      </Field>
-
       <div className="space-y-2">
-        <Label>Cover image</Label>
-        <input type="hidden" {...register("cover_image_url")} />
+        <Label>Image</Label>
+        <input type="hidden" {...register("image_url")} />
         <input
           ref={fileRef}
           type="file"
@@ -200,7 +191,7 @@ function ProjectForm({
           <div className="border-border relative overflow-hidden rounded-lg border">
             <img
               src={displaySrc}
-              alt="Cover preview"
+              alt="Gallery preview"
               className="aspect-[4/3] w-full object-cover"
             />
             {upload.isPending ? (
@@ -250,20 +241,24 @@ function ProjectForm({
             )}
           </button>
         )}
-        {errors.cover_image_url?.message ? (
-          <p className="text-destructive text-sm">
-            {errors.cover_image_url.message}
-          </p>
+        {errors.image_url?.message ? (
+          <p className="text-destructive text-sm">{errors.image_url.message}</p>
         ) : null}
       </div>
 
-      <Field label="Description" error={errors.description?.message}>
+      <div className="space-y-2">
+        <Label>Description</Label>
         <Textarea
           {...register("description")}
           rows={3}
-          placeholder="Short description of the project."
+          placeholder="Short description of this work."
         />
-      </Field>
+        {errors.description?.message ? (
+          <p className="text-destructive text-sm">
+            {errors.description.message}
+          </p>
+        ) : null}
+      </div>
 
       <DialogFooter>
         <DialogClose render={<Button type="button" variant="outline" />}>
@@ -274,23 +269,5 @@ function ProjectForm({
         </Button>
       </DialogFooter>
     </form>
-  );
-}
-
-function Field({
-  label,
-  error,
-  children,
-}: {
-  label: string;
-  error?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="space-y-2">
-      <Label>{label}</Label>
-      {children}
-      {error ? <p className="text-destructive text-sm">{error}</p> : null}
-    </div>
   );
 }

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MoreHorizontal, Plus } from "lucide-react";
+import { Loader2, MoreHorizontal, Plus } from "lucide-react";
 
 import {
   AlertDialog,
@@ -27,28 +27,28 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { GalleryDialog } from "@/components/admin/gallery-dialog";
 import { ReorderTableBody } from "@/components/admin/reorder-table";
-import { SkillDialog } from "@/components/admin/skill-dialog";
 
 import {
-  useAdminSkills,
-  useDeleteSkill,
-  useReorderSkills,
-} from "@/services/skills";
+  useAdminGallery,
+  useDeleteGalleryImage,
+  useReorderGallery,
+} from "@/services/gallery";
 
-export function SkillsList() {
-  const { data: rows, isLoading } = useAdminSkills();
-  const deleteRow = useDeleteSkill();
-  const reorder = useReorderSkills();
-  const [toDelete, setToDelete] = useState<Skill | null>(null);
+export function GalleryList() {
+  const { data: rows, isLoading } = useAdminGallery();
+  const deleteRow = useDeleteGalleryImage();
+  const reorder = useReorderGallery();
+  const [toDelete, setToDelete] = useState<GalleryImage | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [editRow, setEditRow] = useState<Skill | null>(null);
+  const [editRow, setEditRow] = useState<GalleryImage | null>(null);
 
   const openCreate = () => {
     setEditRow(null);
     setDialogOpen(true);
   };
-  const openEdit = (row: Skill) => {
+  const openEdit = (row: GalleryImage) => {
     setEditRow(row);
     setDialogOpen(true);
   };
@@ -57,14 +57,14 @@ export function SkillsList() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">What I do</h1>
+          <h1 className="text-2xl font-semibold">Gallery</h1>
           <p className="text-muted-foreground">
-            Manage your services and capabilities. Drag rows to reorder.
+            Manage your photo gallery. Drag rows to reorder.
           </p>
         </div>
         <Button onClick={openCreate}>
           <Plus />
-          New skill
+          New image
         </Button>
       </div>
 
@@ -73,7 +73,8 @@ export function SkillsList() {
           <TableHeader>
             <TableRow>
               <TableHead className="w-0" />
-              <TableHead>Label</TableHead>
+              <TableHead className="w-0">Image</TableHead>
+              <TableHead>Description</TableHead>
               <TableHead className="w-0" />
             </TableRow>
           </TableHeader>
@@ -81,7 +82,7 @@ export function SkillsList() {
             <TableBody>
               {Array.from({ length: 3 }).map((_, i) => (
                 <TableRow key={i}>
-                  <TableCell colSpan={3}>
+                  <TableCell colSpan={4}>
                     <Skeleton className="h-6 w-full" />
                   </TableCell>
                 </TableRow>
@@ -91,10 +92,10 @@ export function SkillsList() {
             <TableBody>
               <TableRow>
                 <TableCell
-                  colSpan={3}
+                  colSpan={4}
                   className="text-muted-foreground py-10 text-center"
                 >
-                  No skills yet. Add your first one.
+                  No images yet. Add your first one.
                 </TableCell>
               </TableRow>
             </TableBody>
@@ -104,7 +105,16 @@ export function SkillsList() {
               onCommit={(ids) => reorder.mutate(ids)}
               renderCells={(row) => (
                 <>
-                  <TableCell className="font-medium">{row.label}</TableCell>
+                  <TableCell>
+                    <img
+                      src={row.image_url}
+                      alt={row.description ?? "Gallery image"}
+                      className="bg-secondary size-12 rounded-md object-cover"
+                    />
+                  </TableCell>
+                  <TableCell className="text-muted-foreground max-w-md truncate whitespace-normal">
+                    {row.description || "-"}
+                  </TableCell>
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger
@@ -134,7 +144,7 @@ export function SkillsList() {
         </Table>
       </div>
 
-      <SkillDialog
+      <GalleryDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         row={editRow}
@@ -142,27 +152,43 @@ export function SkillsList() {
 
       <AlertDialog
         open={!!toDelete}
-        onOpenChange={(open) => !open && setToDelete(null)}
+        onOpenChange={(open) => {
+          // Don't let the dialog close mid-delete.
+          if (deleteRow.isPending) return;
+          if (!open) setToDelete(null);
+        }}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete skill?</AlertDialogTitle>
+            <AlertDialogTitle>Delete image?</AlertDialogTitle>
             <AlertDialogDescription>
-              “{toDelete?.label}” will be permanently removed. This cannot be
-              undone.
+              The image will be permanently removed from the gallery and from
+              storage. This cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={deleteRow.isPending}>
+              Cancel
+            </AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => {
+              disabled={deleteRow.isPending}
+              onClick={(e) => {
+                e.preventDefault(); // keep the dialog open until the delete settles
                 if (toDelete)
-                  deleteRow.mutate(toDelete.id, {
-                    onSettled: () => setToDelete(null),
-                  });
+                  deleteRow.mutate(
+                    { id: toDelete.id, imageUrl: toDelete.image_url },
+                    { onSettled: () => setToDelete(null) }
+                  );
               }}
             >
-              Delete
+              {deleteRow.isPending ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" />
+                  Deleting…
+                </>
+              ) : (
+                "Delete"
+              )}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

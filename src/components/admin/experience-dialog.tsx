@@ -64,7 +64,6 @@ function ExperienceForm({
       company: row?.company ?? "",
       location: row?.location ?? "",
       description: row?.description ?? "",
-      sort_order: row?.sort_order ?? 0,
     },
   });
 
@@ -75,7 +74,6 @@ function ExperienceForm({
       company: values.company?.trim() ? values.company : null,
       location: values.location?.trim() ? values.location : null,
       description: values.description?.trim() ? values.description : null,
-      sort_order: values.sort_order,
     };
 
     if (row) {
@@ -114,14 +112,6 @@ function ExperienceForm({
           {...register("description")}
           rows={4}
           placeholder="What you did in this role."
-        />
-      </Field>
-
-      <Field label="Sort order" error={errors.sort_order?.message}>
-        <Input
-          type="number"
-          {...register("sort_order", { valueAsNumber: true })}
-          placeholder="0"
         />
       </Field>
 

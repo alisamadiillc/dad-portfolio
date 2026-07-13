@@ -11,6 +11,7 @@ import { AdminLayout } from "@/layouts/admin-layout";
 import { CmsHome } from "@/pages/admin/cms-home";
 import { Dashboard } from "@/pages/admin/dashboard";
 import { ExperienceList } from "@/pages/admin/experience-list";
+import { GalleryList } from "@/pages/admin/gallery-list";
 import { PostEditor } from "@/pages/admin/post-editor";
 import { PostsList } from "@/pages/admin/posts-list";
 import { ProjectsList } from "@/pages/admin/projects-list";
@@ -56,6 +57,7 @@ function AdminApp() {
                 <Route path="cms/experience" element={<ExperienceList />} />
                 <Route path="cms/skills" element={<SkillsList />} />
                 <Route path="cms/projects" element={<ProjectsList />} />
+                <Route path="cms/gallery" element={<GalleryList />} />
                 <Route path="cms/blog" element={<PostsList />} />
                 <Route path="cms/blog/new" element={<PostEditor />} />
                 <Route path="cms/blog/:id" element={<PostEditor />} />
