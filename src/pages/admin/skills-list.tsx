@@ -102,10 +102,12 @@ export function SkillsList() {
             <ReorderTableBody
               rows={rows}
               onCommit={(ids) => reorder.mutate(ids)}
+              onRowClick={openEdit}
               renderCells={(row) => (
                 <>
                   <TableCell className="font-medium">{row.label}</TableCell>
-                  <TableCell>
+                  {/* Row click opens edit — keep menu clicks from bubbling. */}
+                  <TableCell onClick={(e) => e.stopPropagation()}>
                     <DropdownMenu>
                       <DropdownMenuTrigger
                         render={

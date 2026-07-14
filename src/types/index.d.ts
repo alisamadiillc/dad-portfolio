@@ -45,6 +45,7 @@ type GalleryImageDoc =
 type GalleryImage = GalleryImageDoc & { id: string; created_at: number };
 type GalleryImageInput = {
   image_url: string;
+  secondary_image_url?: string | null;
   description?: string | null;
 };
 

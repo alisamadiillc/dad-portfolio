@@ -4,6 +4,7 @@ import { motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
+import { BeforeAfterSlider } from "@/components/before-after-slider";
 import { LightboxImage } from "@/components/lightbox-image";
 
 import { useExperiences } from "@/services/experience";
@@ -393,11 +394,19 @@ function GallerySection() {
           <Reveal key={row.id} delay={i * 0.04}>
             <figure className="relative overflow-hidden rounded-xl">
               <div className="bg-secondary aspect-[4/3] overflow-hidden">
-                <LightboxImage
-                  src={row.image_url}
-                  alt={row.description || "Gallery image"}
-                  className="size-full object-cover"
-                />
+                {row.secondary_image_url ? (
+                  <BeforeAfterSlider
+                    beforeSrc={row.image_url}
+                    afterSrc={row.secondary_image_url}
+                    alt={row.description || "Before and after comparison"}
+                  />
+                ) : (
+                  <LightboxImage
+                    src={row.image_url}
+                    alt={row.description || "Gallery image"}
+                    className="size-full object-cover"
+                  />
+                )}
               </div>
               {row.description && (
                 <figcaption className="pointer-events-none absolute right-0 bottom-0 left-0 bg-gradient-to-t from-black/70 to-transparent p-3 text-sm text-white md:text-base">

@@ -82,7 +82,11 @@ export function PostsList() {
               </TableRow>
             ) : (
               posts.map((post) => (
-                <TableRow key={post.id}>
+                <TableRow
+                  key={post.id}
+                  className="cursor-pointer"
+                  onClick={() => navigate(`/admin/cms/blog/${post.id}`)}
+                >
                   <TableCell className="font-medium">{post.title}</TableCell>
                   <TableCell className="text-muted-foreground">
                     {post.slug}
@@ -95,7 +99,8 @@ export function PostsList() {
                   <TableCell className="text-muted-foreground">
                     {new Date(post.updated_at).toLocaleDateString()}
                   </TableCell>
-                  <TableCell>
+                  {/* Row click opens the editor — keep menu clicks from bubbling. */}
+                  <TableCell onClick={(e) => e.stopPropagation()}>
                     <DropdownMenu>
                       <DropdownMenuTrigger
                         render={

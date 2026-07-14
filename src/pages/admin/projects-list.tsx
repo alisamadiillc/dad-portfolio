@@ -103,13 +103,15 @@ export function ProjectsList() {
             <ReorderTableBody
               rows={rows}
               onCommit={(ids) => reorder.mutate(ids)}
+              onRowClick={openEdit}
               renderCells={(row) => (
                 <>
                   <TableCell className="font-medium">{row.title}</TableCell>
                   <TableCell className="text-muted-foreground">
                     {row.cover_image_url ? "Yes" : "-"}
                   </TableCell>
-                  <TableCell>
+                  {/* Row click opens edit — keep menu clicks from bubbling. */}
+                  <TableCell onClick={(e) => e.stopPropagation()}>
                     <DropdownMenu>
                       <DropdownMenuTrigger
                         render={

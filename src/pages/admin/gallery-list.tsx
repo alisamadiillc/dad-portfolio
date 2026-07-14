@@ -103,19 +103,37 @@ export function GalleryList() {
             <ReorderTableBody
               rows={rows}
               onCommit={(ids) => reorder.mutate(ids)}
+              onRowClick={openEdit}
               renderCells={(row) => (
                 <>
                   <TableCell>
-                    <img
-                      src={row.image_url}
-                      alt={row.description ?? "Gallery image"}
-                      className="bg-secondary size-12 rounded-md object-cover"
-                    />
+                    <div
+                      className="relative size-12"
+                      title={
+                        row.secondary_image_url
+                          ? "Before/after pair"
+                          : undefined
+                      }
+                    >
+                      <img
+                        src={row.image_url}
+                        alt={row.description ?? "Gallery image"}
+                        className="bg-secondary size-12 rounded-md object-cover"
+                      />
+                      {row.secondary_image_url ? (
+                        <img
+                          src={row.secondary_image_url}
+                          alt=""
+                          className="bg-secondary ring-background absolute -right-1.5 -bottom-1.5 size-7 rounded-md object-cover ring-2"
+                        />
+                      ) : null}
+                    </div>
                   </TableCell>
                   <TableCell className="text-muted-foreground max-w-md truncate whitespace-normal">
                     {row.description || "-"}
                   </TableCell>
-                  <TableCell>
+                  {/* Row click opens edit — keep menu clicks from bubbling. */}
+                  <TableCell onClick={(e) => e.stopPropagation()}>
                     <DropdownMenu>
                       <DropdownMenuTrigger
                         render={
@@ -176,7 +194,11 @@ export function GalleryList() {
                 e.preventDefault(); // keep the dialog open until the delete settles
                 if (toDelete)
                   deleteRow.mutate(
-                    { id: toDelete.id, imageUrl: toDelete.image_url },
+                    {
+                      id: toDelete.id,
+                      imageUrl: toDelete.image_url,
+                      secondaryImageUrl: toDelete.secondary_image_url,
+                    },
                     { onSettled: () => setToDelete(null) }
                   );
               }}

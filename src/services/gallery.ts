@@ -15,6 +15,9 @@ import type { Id } from "../../convex/_generated/dataModel";
 
 export const galleryImageSchema = z.object({
   image_url: z.string().min(1, "Image is required").url("Must be a valid URL"),
+  // Optional "after" image — only ever set by the upload flow (a valid URL) or
+  // cleared to "", so no .url() (the empty default must pass validation).
+  secondary_image_url: z.string().optional(),
   description: z.string().optional(),
 });
 
@@ -80,13 +83,18 @@ export const useDeleteGalleryImage = () => {
     mutationFn: async ({
       id,
       imageUrl,
+      secondaryImageUrl,
     }: {
       id: string;
       imageUrl?: string | null;
+      secondaryImageUrl?: string | null;
     }) => {
       await remove({ id: id as Id<"gallery"> });
-      // Clean up the stored image so storage doesn't accumulate orphans.
-      await deleteStorageObject(imageUrl);
+      // Clean up stored images so storage doesn't accumulate orphans.
+      await Promise.all([
+        deleteStorageObject(imageUrl),
+        deleteStorageObject(secondaryImageUrl),
+      ]);
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: KEY });

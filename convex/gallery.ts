@@ -32,14 +32,23 @@ export const getById = query({
 
 const clearable = v.optional(v.union(v.string(), v.null()));
 
-const normalize = <T extends { description?: string | null }>(input: T) => ({
+const normalize = <
+  T extends {
+    description?: string | null;
+    secondary_image_url?: string | null;
+  },
+>(
+  input: T
+) => ({
   ...input,
   description: input.description ?? undefined,
+  secondary_image_url: input.secondary_image_url ?? undefined,
 });
 
 export const create = mutation({
   args: {
     image_url: v.string(),
+    secondary_image_url: clearable,
     description: clearable,
   },
   handler: async (ctx, args) => {
@@ -63,16 +72,20 @@ export const update = mutation({
     id: v.id("gallery"),
     input: v.object({
       image_url: v.optional(v.string()),
+      secondary_image_url: clearable,
       description: clearable,
     }),
   },
   handler: async (ctx, { id, input }) => {
     await requireAuth(ctx);
-    const { description, ...rest } = input;
+    const { description, secondary_image_url, ...rest } = input;
     await ctx.db.patch(id, {
       ...rest,
       ...(description !== undefined && {
         description: description ?? undefined,
+      }),
+      ...(secondary_image_url !== undefined && {
+        secondary_image_url: secondary_image_url ?? undefined,
       }),
       updated_at: Date.now(),
     });

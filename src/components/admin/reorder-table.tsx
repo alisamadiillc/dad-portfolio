@@ -13,10 +13,12 @@ import { TableCell } from "@/components/ui/table";
 export function ReorderTableBody<T extends { id: string }>({
   rows,
   onCommit,
+  onRowClick,
   renderCells,
 }: {
   rows: T[];
   onCommit: (ids: string[]) => void;
+  onRowClick?: (row: T) => void;
   renderCells: (row: T) => React.ReactNode;
 }) {
   const [order, setOrder] = useState(rows);
@@ -40,6 +42,7 @@ export function ReorderTableBody<T extends { id: string }>({
         <ReorderRow
           key={row.id}
           row={row}
+          onRowClick={onRowClick}
           onDragStart={() => {
             draggingRef.current = true;
           }}
@@ -58,11 +61,13 @@ export function ReorderTableBody<T extends { id: string }>({
 function ReorderRow<T extends { id: string }>({
   row,
   children,
+  onRowClick,
   onDragStart,
   onDragEnd,
 }: {
   row: T;
   children: React.ReactNode;
+  onRowClick?: (row: T) => void;
   onDragStart: () => void;
   onDragEnd: () => void;
 }) {
@@ -77,14 +82,19 @@ function ReorderRow<T extends { id: string }>({
       dragControls={controls}
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
+      onClick={onRowClick ? () => onRowClick(row) : undefined}
       data-slot="table-row"
-      className="hover:bg-muted/50 bg-background relative border-b transition-colors"
+      className={`hover:bg-muted/50 bg-background relative border-b transition-colors ${
+        onRowClick ? "cursor-pointer" : ""
+      }`}
     >
       <TableCell className="w-0">
         <button
           type="button"
           aria-label="Drag to reorder"
           onPointerDown={(e) => controls.start(e)}
+          // Don't let a click on the handle (e.g. after a drag) open the row.
+          onClick={(e) => e.stopPropagation()}
           className="text-muted-foreground hover:text-foreground flex cursor-grab touch-none items-center active:cursor-grabbing"
         >
           <GripVertical className="size-4" />

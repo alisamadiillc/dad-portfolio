@@ -104,6 +104,7 @@ export function ExperienceList() {
             <ReorderTableBody
               rows={rows}
               onCommit={(ids) => reorder.mutate(ids)}
+              onRowClick={openEdit}
               renderCells={(row) => (
                 <>
                   <TableCell className="text-muted-foreground">
@@ -113,7 +114,8 @@ export function ExperienceList() {
                   <TableCell className="text-muted-foreground">
                     {row.company}
                   </TableCell>
-                  <TableCell>
+                  {/* Row click opens edit — keep menu clicks from bubbling. */}
+                  <TableCell onClick={(e) => e.stopPropagation()}>
                     <DropdownMenu>
                       <DropdownMenuTrigger
                         render={

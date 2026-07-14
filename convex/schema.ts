@@ -40,6 +40,8 @@ export default defineSchema({
 
   gallery: defineTable({
     image_url: v.string(),
+    // Present ⇒ before/after pair: image_url is "before", this is "after".
+    secondary_image_url: v.optional(v.string()),
     description: v.optional(v.string()),
     sort_order: v.number(),
     updated_at: v.number(),
