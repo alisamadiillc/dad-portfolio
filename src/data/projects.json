@@ -1,0 +1,6 @@
+{
+  "projects": [
+    { "title": "Project One", "cover_image_url": "/media/hero.svg" },
+    { "title": "Project Two", "cover_image_url": "/media/hero.svg" }
+  ]
+}

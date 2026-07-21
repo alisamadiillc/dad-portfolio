@@ -2,7 +2,25 @@
 import Layout from "../layouts/Layout.astro";
 import BeforeAfterSlider from "../components/BeforeAfterSlider.astro";
 import Lightbox from "../components/Lightbox.astro";
-import site from "../data/site.json";
+import identity from "../data/identity.json";
+import hero from "../data/hero.json";
+import about from "../data/about.json";
+import contact from "../data/contact.json";
+import experienceData from "../data/experience.json";
+import skillsData from "../data/skills.json";
+import projectsData from "../data/projects.json";
+import galleryData from "../data/gallery.json";
+
+const site = {
+  ...identity,
+  ...hero,
+  ...about,
+  ...contact,
+  ...experienceData,
+  ...skillsData,
+  ...projectsData,
+  ...galleryData,
+};
 
 const NAV = [
   { label: "About", href: "#about" },
