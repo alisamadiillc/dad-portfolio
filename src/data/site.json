@@ -13,29 +13,40 @@
   "footer_text": "© Mohammad Samadi. All rights reserved.",
   "experience": [
     {
-      "period": "2010 — Present",
+      "period": "aklsdjfkaljsdf",
       "role": "Independent Craftsman",
       "company": "Self-employed",
-      "location": "",
       "description": "Delivering high-quality work for clients across the region, managing projects end to end from first call to final handover."
     },
     {
       "period": "2000 — 2010",
       "role": "Senior Specialist",
-      "company": "",
-      "location": "",
       "description": "Led teams on large projects, mentored junior workers, and set the standard for quality and safety on every site."
     }
   ],
   "skills": [
-    { "label": "Attention to detail" },
-    { "label": "Project management" },
-    { "label": "Quality craftsmanship" },
-    { "label": "Reliable & on time" }
+    {
+      "label": "Attention to detail"
+    },
+    {
+      "label": "Project management"
+    },
+    {
+      "label": "Quality craftsmanship"
+    },
+    {
+      "label": "Reliable & on time"
+    }
   ],
   "projects": [
-    { "title": "Project One", "cover_image_url": "/media/hero.svg" },
-    { "title": "Project Two", "cover_image_url": "/media/hero.svg" }
+    {
+      "title": "Project One",
+      "cover_image_url": "/media/hero.svg"
+    },
+    {
+      "title": "Project Two",
+      "cover_image_url": "/media/hero.svg"
+    }
   ],
   "gallery": [
     {
