@@ -1,75 +1,48 @@
-# React + TypeScript + Vite
+# Astro CMS Template
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Static Astro site with [Tailwind CSS v4](https://tailwindcss.com) and content editable through [Pages CMS](https://pagescms.org) — free, git-based, no code footprint beyond `.pages.yml`.
 
-Currently, two official plugins are available:
+## Project Structure
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
-
-Note: This will impact Vite dev & build performances.
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(["dist"]),
-  {
-    files: ["**/*.{ts,tsx}"],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
+```text
+/
+├── .pages.yml            # Pages CMS config (fields, media)
+├── public/
+│   └── media/            # CMS-uploaded images
+├── src/
+│   ├── data/
+│   │   └── site.json     # editable site content
+│   ├── layouts/
+│   │   └── Layout.astro
+│   ├── pages/
+│   │   └── index.astro   # renders site.json
+│   └── styles/
+│       └── global.css    # Tailwind entry
+└── package.json
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Commands
 
-```js
-// eslint.config.js
-import reactDom from "eslint-plugin-react-dom";
-import reactX from "eslint-plugin-react-x";
+| Command        | Action                               |
+| :------------- | :----------------------------------- |
+| `pnpm install` | Install dependencies                 |
+| `pnpm dev`     | Start dev server at `localhost:4321` |
+| `pnpm build`   | Build production site to `./dist/`   |
+| `pnpm preview` | Preview the build locally            |
 
-export default defineConfig([
-  globalIgnores(["dist"]),
-  {
-    files: ["**/*.{ts,tsx}"],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs["recommended-typescript"],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
-```
+## Client Editing (Pages CMS, self-hosted)
+
+Content is edited at [cms.alisamadii.com](https://cms.alisamadii.com) — a self-hosted Pages CMS instance (fork: `alisamadiii/pagescms`, deployed on Vercel, Neon Postgres for accounts).
+
+1. Install the **Ali Samadi CMS** GitHub App on the repository ([github.com/apps/ali-samadi-cms](https://github.com/apps/ali-samadi-cms))
+2. Sign in at cms.alisamadii.com with GitHub — the repo appears, `.pages.yml` is read automatically
+3. Clients sign in with their GitHub account, or (once Resend is configured) get invited by email under **Collaborators** — magic-link login, no GitHub account needed
+4. Every save commits to `main` and triggers a redeploy
+
+Collaborators can edit content and media only — they cannot change `.pages.yml` or site code.
+
+## Adding Editable Fields
+
+1. Add the field to `src/data/site.json`
+2. Render it in `src/pages/index.astro`
+3. Mirror the field in `.pages.yml` (same name/structure)

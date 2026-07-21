@@ -1,0 +1,426 @@
+---
+import Layout from "../layouts/Layout.astro";
+import BeforeAfterSlider from "../components/BeforeAfterSlider.astro";
+import Lightbox from "../components/Lightbox.astro";
+import site from "../data/site.json";
+
+const NAV = [
+  { label: "About", href: "#about" },
+  { label: "Experience", href: "#experience" },
+  { label: "Work", href: "#work" },
+  { label: "Gallery", href: "#gallery" },
+  { label: "Contact", href: "#contact" },
+];
+
+const telHref = (phone: string) => `tel:${phone.replace(/[^\d+]/g, "")}`;
+
+const aboutParagraphs = (site.about ?? "")
+  .split(/\n\s*\n/)
+  .filter((p) => p.trim());
+
+const experience = site.experience ?? [];
+const skills = site.skills ?? [];
+const projects = site.projects ?? [];
+const gallery = site.gallery ?? [];
+---
+
+<Layout title={site.name} description={site.hero_bio}>
+  <div class="bg-background text-foreground relative min-h-[100dvh]">
+    <!-- Nav -->
+    <header
+      class="border-border/60 bg-background/80 sticky top-0 z-40 border-b backdrop-blur"
+    >
+      <div
+        class="mx-auto flex h-16 max-w-2xl items-center justify-between px-5"
+      >
+        <a href="#top" class="text-sm font-semibold tracking-tight"
+          >{site.short_name}</a
+        >
+        <nav class="hidden items-center gap-6 sm:flex">
+          {
+            NAV.map((item) => (
+              <a
+                href={item.href}
+                class="text-muted-foreground hover:text-foreground text-sm transition-colors"
+              >
+                {item.label}
+              </a>
+            ))
+          }
+        </nav>
+        <div class="flex items-center gap-1">
+          <a
+            href={telHref(site.phone)}
+            aria-label="Call"
+            class="border-border bg-background hover:bg-muted inline-flex size-7 items-center justify-center rounded-md border transition-colors"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="size-4"
+            >
+              <path
+                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"
+              ></path>
+            </svg>
+          </a>
+          <a
+            href={`mailto:${site.email}`}
+            aria-label="Email"
+            class="border-border bg-background hover:bg-muted inline-flex size-7 items-center justify-center rounded-md border transition-colors"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="size-4"
+            >
+              <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main class="mx-auto max-w-2xl px-5">
+      <!-- Hero -->
+      <section id="top" class="relative pt-16 pb-20">
+        <svg
+          aria-hidden="true"
+          class="text-border pointer-events-none absolute inset-x-0 -top-16 -z-10 h-72 w-full opacity-70"
+          preserveAspectRatio="none"
+          viewBox="0 0 800 300"
+          fill="none"
+        >
+          {
+            Array.from({ length: 7 }).map((_, i) => (
+              <path
+                d={`M0 ${40 + i * 32} C 160 ${20 + i * 32}, 320 ${60 + i * 32}, 480 ${40 + i * 32} S 720 ${20 + i * 32}, 800 ${40 + i * 32}`}
+                stroke="currentColor"
+                stroke-width="1"
+              />
+            ))
+          }
+        </svg>
+
+        <div class="relative">
+          <img
+            src={site.avatar_url}
+            alt={site.name}
+            width="160"
+            height="160"
+            class="bg-secondary text-foreground ring-border flex size-24 items-center justify-center rounded-full object-cover text-lg font-semibold ring-1 md:size-32 lg:size-40"
+          />
+
+          <div class="mt-6">
+            <span
+              class="bg-foreground text-background inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium"
+            >
+              <span class="size-1.5 rounded-full bg-emerald-400"></span>
+              {site.availability_label}
+            </span>
+          </div>
+
+          <h1
+            class="mt-6 text-4xl font-bold tracking-tight text-balance sm:text-5xl"
+          >
+            {site.headline}
+          </h1>
+
+          <p class="text-muted-foreground mt-5 max-w-xl leading-relaxed">
+            {site.hero_bio}
+          </p>
+
+          <div class="mt-8 flex items-center gap-6">
+            <a
+              href="#contact"
+              class="bg-brand text-brand-foreground hover:bg-brand/90 inline-flex h-10 items-center justify-center rounded-lg px-4 text-base font-medium transition-all md:px-6"
+            >
+              Hire me
+            </a>
+            <a
+              href="#experience"
+              class="text-sm font-medium underline underline-offset-4"
+            >
+              View experience
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- About -->
+      <section
+        id="about"
+        class="border-border/60 scroll-mt-20 border-t py-16"
+      >
+        <div data-reveal>
+          <p
+            class="text-muted-foreground mb-6 text-xs font-medium tracking-[0.18em] uppercase"
+          >
+            About
+          </p>
+          <div class="text-foreground/90 space-y-4 leading-relaxed">
+            {aboutParagraphs.map((p) => <p>{p}</p>)}
+          </div>
+        </div>
+      </section>
+
+      <!-- Experience -->
+      <section
+        id="experience"
+        class="border-border/60 scroll-mt-20 border-t py-16"
+      >
+        <div data-reveal>
+          <p
+            class="text-muted-foreground mb-6 text-xs font-medium tracking-[0.18em] uppercase"
+          >
+            Experience
+          </p>
+        </div>
+        <div class="space-y-10">
+          {
+            experience.length === 0 ? (
+              <p class="text-muted-foreground text-sm">
+                No experience added yet.
+              </p>
+            ) : (
+              experience.map((row) => (
+                <div data-reveal>
+                  <div class="grid gap-2 sm:grid-cols-[7rem_1fr] sm:gap-6">
+                    <p class="text-muted-foreground pt-0.5 text-sm">
+                      {row.period}
+                    </p>
+                    <div>
+                      <h3 class="font-semibold tracking-tight">{row.role}</h3>
+                      {(row.company || row.location) && (
+                        <p class="text-muted-foreground mt-0.5 text-sm">
+                          {[row.company, row.location]
+                            .filter(Boolean)
+                            .join(" · ")}
+                        </p>
+                      )}
+                      {row.description && (
+                        <p class="text-foreground/80 mt-2 text-sm leading-relaxed">
+                          {row.description}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))
+            )
+          }
+        </div>
+      </section>
+
+      <!-- What I do -->
+      <section class="border-border/60 scroll-mt-20 border-t py-16">
+        <div data-reveal>
+          <p
+            class="text-muted-foreground mb-6 text-xs font-medium tracking-[0.18em] uppercase"
+          >
+            What I do
+          </p>
+        </div>
+        {
+          skills.length === 0 ? (
+            <p class="text-muted-foreground text-sm">No services added yet.</p>
+          ) : (
+            <div class="grid gap-3 sm:grid-cols-2">
+              {skills.map((row) => (
+                <div data-reveal>
+                  <div class="border-border flex items-center gap-3 rounded-lg border px-4 py-3">
+                    <span class="bg-foreground size-2 shrink-0 rounded-[2px]" />
+                    <span class="text-sm font-medium">{row.label}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )
+        }
+      </section>
+
+      <!-- Selected work -->
+      <section id="work" class="border-border/60 scroll-mt-20 border-t py-16">
+        <div data-reveal>
+          <p
+            class="text-muted-foreground mb-6 text-xs font-medium tracking-[0.18em] uppercase"
+          >
+            Selected work
+          </p>
+        </div>
+        {
+          projects.length === 0 ? (
+            <p class="text-muted-foreground text-sm">No projects added yet.</p>
+          ) : (
+            <div class="grid gap-5 sm:grid-cols-2">
+              {projects.map((row) => (
+                <div data-reveal>
+                  <figure>
+                    <div class="bg-secondary aspect-[4/3] overflow-hidden rounded-xl">
+                      {row.cover_image_url && (
+                        <img
+                          src={row.cover_image_url}
+                          alt={row.title}
+                          loading="lazy"
+                          data-lightbox={row.cover_image_url}
+                          data-lightbox-alt={row.title}
+                          class="size-full cursor-zoom-in object-cover"
+                        />
+                      )}
+                    </div>
+                    <figcaption class="mt-3 text-sm font-semibold">
+                      {row.title}
+                    </figcaption>
+                  </figure>
+                </div>
+              ))}
+            </div>
+          )
+        }
+      </section>
+    </main>
+
+    <!-- Gallery (full-width breakout) -->
+    {
+      gallery.length > 0 && (
+        <section
+          id="gallery"
+          class="border-border/60 scroll-mt-20 border-t py-16"
+        >
+          <div data-reveal class="mx-auto max-w-2xl px-5">
+            <p class="text-muted-foreground mb-6 text-xs font-medium tracking-[0.18em] uppercase">
+              Gallery
+            </p>
+          </div>
+          <div class="mx-auto grid max-w-7xl gap-5 px-5 sm:grid-cols-2 md:grid-cols-3">
+            {gallery.map((row) => (
+              <div data-reveal>
+                <figure class="relative overflow-hidden rounded-xl">
+                  <div class="bg-secondary aspect-[4/3] overflow-hidden">
+                    {row.secondary_image_url ? (
+                      <BeforeAfterSlider
+                        beforeSrc={row.image_url}
+                        afterSrc={row.secondary_image_url}
+                        alt={row.description || "Before and after comparison"}
+                      />
+                    ) : (
+                      <img
+                        src={row.image_url}
+                        alt={row.description || "Gallery image"}
+                        loading="lazy"
+                        data-lightbox={row.image_url}
+                        data-lightbox-alt={row.description || "Gallery image"}
+                        class="size-full cursor-zoom-in object-cover"
+                      />
+                    )}
+                  </div>
+                  {row.description && (
+                    <figcaption class="pointer-events-none absolute right-0 bottom-0 left-0 bg-gradient-to-t from-black/70 to-transparent p-3 text-sm text-white md:text-base">
+                      {row.description}
+                    </figcaption>
+                  )}
+                </figure>
+              </div>
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    <!-- Contact -->
+    <main class="mx-auto max-w-2xl px-5">
+      <section
+        id="contact"
+        class="border-border/60 scroll-mt-20 border-t py-16"
+      >
+        <div data-reveal>
+          <p
+            class="text-muted-foreground mb-6 text-xs font-medium tracking-[0.18em] uppercase"
+          >
+            Contact
+          </p>
+
+          <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">
+            {site.contact_heading}
+          </h2>
+          <p class="text-muted-foreground mt-4 max-w-md leading-relaxed">
+            {site.contact_subtext}
+          </p>
+
+          <div class="mt-8 grid gap-4 sm:grid-cols-2">
+            <a
+              href={telHref(site.phone)}
+              class="border-border hover:border-foreground/40 block rounded-lg border px-4 py-3 transition-colors"
+            >
+              <span
+                class="text-muted-foreground block text-xs tracking-[0.18em] uppercase"
+                >Phone</span
+              >
+              <span class="mt-1 block font-medium">{site.phone}</span>
+            </a>
+            <a
+              href={`mailto:${site.email}`}
+              class="border-border hover:border-foreground/40 block rounded-lg border px-4 py-3 transition-colors"
+            >
+              <span
+                class="text-muted-foreground block text-xs tracking-[0.18em] uppercase"
+                >Email</span
+              >
+              <span class="mt-1 block font-medium">{site.email}</span>
+            </a>
+          </div>
+
+          <div class="mt-8">
+            <a
+              href={`mailto:${site.email}`}
+              class="bg-primary text-primary-foreground inline-flex h-10 items-center justify-center gap-2 rounded-lg px-4 text-base font-medium transition-all md:px-6"
+            >
+              Email me
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="size-4"
+              >
+                <path d="M5 12h14"></path>
+                <path d="m12 5 7 7-7 7"></path>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-border/60 mt-10 border-t">
+      <div
+        class="text-muted-foreground mx-auto max-w-2xl px-5 py-8 text-xs"
+      >
+        <p>{site.footer_text}</p>
+      </div>
+    </footer>
+  </div>
+
+  <Lightbox />
+</Layout>

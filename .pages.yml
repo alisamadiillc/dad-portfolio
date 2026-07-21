@@ -1,0 +1,105 @@
+media:
+  input: public/media
+  output: /media
+
+content:
+  - name: site
+    label: Site
+    type: file
+    path: src/data/site.json
+    format: json
+    fields:
+      - name: name
+        label: Full name
+        type: string
+        required: true
+      - name: short_name
+        label: Nav name
+        type: string
+      - name: avatar_url
+        label: Avatar
+        type: image
+      - name: availability_label
+        label: Availability badge
+        type: string
+      - name: headline
+        label: Headline
+        type: string
+      - name: hero_bio
+        label: Hero bio
+        type: text
+      - name: about
+        label: About (blank line = new paragraph)
+        type: text
+      - name: contact_heading
+        label: Contact heading
+        type: string
+      - name: contact_subtext
+        label: Contact subtext
+        type: text
+      - name: email
+        label: Email
+        type: string
+      - name: phone
+        label: Phone
+        type: string
+      - name: footer_text
+        label: Footer text
+        type: string
+      - name: experience
+        label: Experience
+        type: object
+        list: true
+        fields:
+          - name: period
+            label: Period
+            type: string
+          - name: role
+            label: Role
+            type: string
+            required: true
+          - name: company
+            label: Company
+            type: string
+          - name: location
+            label: Location
+            type: string
+          - name: description
+            label: Description
+            type: text
+      - name: skills
+        label: What I do
+        type: object
+        list: true
+        fields:
+          - name: label
+            label: Label
+            type: string
+            required: true
+      - name: projects
+        label: Selected work
+        type: object
+        list: true
+        fields:
+          - name: title
+            label: Title
+            type: string
+            required: true
+          - name: cover_image_url
+            label: Image
+            type: image
+      - name: gallery
+        label: Gallery
+        type: object
+        list: true
+        fields:
+          - name: image_url
+            label: Image (before)
+            type: image
+            required: true
+          - name: secondary_image_url
+            label: After image (optional — enables before/after slider)
+            type: image
+          - name: description
+            label: Caption
+            type: string
