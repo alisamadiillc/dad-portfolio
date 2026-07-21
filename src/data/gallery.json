@@ -1,0 +1,9 @@
+{
+  "gallery": [
+    {
+      "image_url": "/media/hero.svg",
+      "secondary_image_url": "/media/hero.svg",
+      "description": "Before and after"
+    }
+  ]
+}

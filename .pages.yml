@@ -3,10 +3,10 @@ media:
   output: /media
 
 content:
-  - name: site
-    label: Site
+  - name: identity
+    label: Identity
     type: file
-    path: src/data/site.json
+    path: src/data/identity.json
     format: json
     fields:
       - name: name
@@ -19,6 +19,12 @@ content:
       - name: avatar_url
         label: Avatar
         type: image
+  - name: hero
+    label: Hero
+    type: file
+    path: src/data/hero.json
+    format: json
+    fields:
       - name: availability_label
         label: Availability badge
         type: string
@@ -28,9 +34,21 @@ content:
       - name: hero_bio
         label: Hero bio
         type: text
+  - name: about
+    label: About
+    type: file
+    path: src/data/about.json
+    format: json
+    fields:
       - name: about
         label: About (blank line = new paragraph)
         type: text
+  - name: contact
+    label: Contact
+    type: file
+    path: src/data/contact.json
+    format: json
+    fields:
       - name: contact_heading
         label: Contact heading
         type: string
@@ -46,6 +64,12 @@ content:
       - name: footer_text
         label: Footer text
         type: string
+  - name: experience
+    label: Experience
+    type: file
+    path: src/data/experience.json
+    format: json
+    fields:
       - name: experience
         label: Experience
         type: object
@@ -67,6 +91,12 @@ content:
           - name: description
             label: Description
             type: text
+  - name: skills
+    label: Skills
+    type: file
+    path: src/data/skills.json
+    format: json
+    fields:
       - name: skills
         label: What I do
         type: object
@@ -76,6 +106,12 @@ content:
             label: Label
             type: string
             required: true
+  - name: projects
+    label: Projects
+    type: file
+    path: src/data/projects.json
+    format: json
+    fields:
       - name: projects
         label: Selected work
         type: object
@@ -88,6 +124,12 @@ content:
           - name: cover_image_url
             label: Image
             type: image
+  - name: gallery
+    label: Gallery
+    type: file
+    path: src/data/gallery.json
+    format: json
+    fields:
       - name: gallery
         label: Gallery
         type: object
