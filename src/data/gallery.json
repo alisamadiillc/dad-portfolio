@@ -2,8 +2,11 @@
   "gallery": [
     {
       "image_url": "/media/gallery/bathroom-before.jpeg",
-      "secondary_image_url": "/media/gallery/bathroom-after.webp",
-      "description": "Before and after"
+      "secondary_image_url": "/media/gallery/bathroom-after.webp"
+    },
+    {
+      "image_url": "/media/gallery/bathroom-2-before.jpeg",
+      "secondary_image_url": "/media/gallery/bathroom-2-after.jpeg"
     }
   ]
 }
