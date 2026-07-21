@@ -36,13 +36,18 @@ const aboutParagraphs = (site.about ?? "")
   .split(/\n\s*\n/)
   .filter((p) => p.trim());
 
+// SEO meta description — first paragraph of About, whitespace-collapsed.
+const seoDescription = (aboutParagraphs[0] ?? site.hero_bio ?? "")
+  .replace(/\s+/g, " ")
+  .trim();
+
 const experience = site.experience ?? [];
 const skills = site.skills ?? [];
 const projects = site.projects ?? [];
 const gallery = site.gallery ?? [];
 ---
 
-<Layout title={site.name} description={site.hero_bio}>
+<Layout title={site.name} description={seoDescription}>
   <div class="bg-background text-foreground relative min-h-[100dvh]">
     <!-- Nav -->
     <header
