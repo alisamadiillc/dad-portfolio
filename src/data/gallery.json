@@ -1,8 +1,8 @@
 {
   "gallery": [
     {
-      "image_url": "/media/hero.svg",
-      "secondary_image_url": "/media/hero.svg",
+      "image_url": "/media/gallery/bathroom-before.jpeg",
+      "secondary_image_url": "/media/gallery/bathroom-after.webp",
       "description": "Before and after"
     }
   ]
