@@ -1,0 +1,42 @@
+{
+  "identity": {
+    "name": "Mohammad Amin Samadi",
+    "short_name": "Mohammad Samadi",
+    "avatar_url": "/media/mohammad-amin.webp"
+  },
+  "hero": {
+    "availability_label": "Available for work · Florida",
+    "headline": "Remodeling & handyman with 20+ years on the tools.",
+    "hero_bio": "Hi, I'm Mohammad Amin Samadi. With over 20 years of experience in construction, I’ve worked in painting, outdoor projects, tile installation, carpentry, plumbing, and more. I’m passionate about helping Florida homeowners create the homes they’ve always dreamed of through quality workmanship and attention to detail."
+  },
+  "about": "I work directly with homeowners and contractors across Florida, no middlemen, no surprises. I show up when I say I will, keep the site clean, and don't call a job done until it's right.\n\nWhether it's a full kitchen gut or a long list of small fixes, I bring the same care and craftsmanship I've built over 20 years.",
+  "contact": {
+    "contact_heading": "Looking to hire? Let's talk.",
+    "contact_subtext": "Reach out anytime, happy to walk through my experience or come take a look at a project.",
+    "email": "masamadi.sfr@gmail.com",
+    "phone": "503-991-4128",
+    "footer_text": "© 2026 Mohammad Amin Samadi · Remodeling & Handyman · Florida"
+  },
+  "experience": [
+    {
+      "period": "2010 — Present",
+      "role": "Independent Craftsman",
+      "company": "Self-employed",
+      "location": "",
+      "description": "Delivering high-quality work for clients across the region, managing projects end to end from first call to final handover."
+    },
+    {
+      "period": "2000 — 2010",
+      "role": "Senior Specialist",
+      "company": "",
+      "location": "",
+      "description": "Led teams on large projects, mentored junior workers, and set the standard for quality and safety on every site."
+    }
+  ],
+  "skills": [
+    { "label": "Attention to detail" },
+    { "label": "Project management" },
+    { "label": "Quality craftsmanship" },
+    { "label": "Reliable & on time" }
+  ]
+}

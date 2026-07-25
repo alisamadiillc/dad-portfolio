@@ -2,22 +2,18 @@
 import Layout from "../layouts/Layout.astro";
 import BeforeAfterSlider from "../components/BeforeAfterSlider.astro";
 import Lightbox from "../components/Lightbox.astro";
-import identity from "../data/identity.json";
-import hero from "../data/hero.json";
-import about from "../data/about.json";
-import contact from "../data/contact.json";
-import experienceData from "../data/experience.json";
-import skillsData from "../data/skills.json";
+import seo from "../data/seo.json";
+import content from "../data/home.json";
 import projectsData from "../data/projects.json";
 import galleryData from "../data/gallery.json";
 
 const site = {
-  ...identity,
-  ...hero,
-  ...about,
-  ...contact,
-  ...experienceData,
-  ...skillsData,
+  ...content.identity,
+  ...content.hero,
+  about: content.about,
+  ...content.contact,
+  experience: content.experience,
+  skills: content.skills,
   ...projectsData,
   ...galleryData,
 };
@@ -36,10 +32,11 @@ const aboutParagraphs = (site.about ?? "")
   .split(/\n\s*\n/)
   .filter((p) => p.trim());
 
-// SEO meta description — first paragraph of About, whitespace-collapsed.
-const seoDescription = (aboutParagraphs[0] ?? site.hero_bio ?? "")
-  .replace(/\s+/g, " ")
-  .trim();
+// SEO meta — from the dedicated `seo` entry, with sensible fallbacks.
+const seoTitle = seo.seo?.title || site.name;
+const seoDescription =
+  seo.seo?.description ||
+  (aboutParagraphs[0] ?? site.hero_bio ?? "").replace(/\s+/g, " ").trim();
 
 const experience = site.experience ?? [];
 const skills = site.skills ?? [];
@@ -47,7 +44,7 @@ const projects = site.projects ?? [];
 const gallery = site.gallery ?? [];
 ---
 
-<Layout title={site.name} description={seoDescription}>
+<Layout title={seoTitle} description={seoDescription}>
   <div class="bg-background text-foreground relative min-h-[100dvh]">
     <!-- Nav -->
     <header
@@ -59,7 +56,7 @@ const gallery = site.gallery ?? [];
         <a
           href="#top"
           class="text-sm font-semibold tracking-tight"
-          data-cms-field="short_name">{site.short_name}</a
+          data-cms-field="identity.short_name">{site.short_name}</a
         >
         <nav class="hidden items-center gap-6 sm:flex">
           {
@@ -148,14 +145,14 @@ const gallery = site.gallery ?? [];
             alt={site.name}
             width="160"
             height="160"
-            data-cms-field="avatar_url"
+            data-cms-field="identity.avatar_url"
             class="bg-secondary text-foreground ring-border flex size-24 items-center justify-center rounded-full object-cover text-lg font-semibold ring-1 md:size-32 lg:size-40"
           />
 
           <div class="mt-6">
             <span
               class="bg-foreground text-background inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium"
-              data-cms-field="availability_label"
+              data-cms-field="hero.availability_label"
             >
               <span class="size-1.5 rounded-full bg-emerald-400"></span>
               {site.availability_label}
@@ -164,14 +161,14 @@ const gallery = site.gallery ?? [];
 
           <h1
             class="mt-6 text-4xl font-bold tracking-tight text-balance sm:text-5xl"
-            data-cms-field="headline"
+            data-cms-field="hero.headline"
           >
             {site.headline}
           </h1>
 
           <p
             class="text-muted-foreground mt-5 max-w-xl leading-relaxed"
-            data-cms-field="hero_bio"
+            data-cms-field="hero.hero_bio"
           >
             {site.hero_bio}
           </p>
@@ -418,13 +415,13 @@ const gallery = site.gallery ?? [];
 
           <h2
             class="text-3xl font-bold tracking-tight sm:text-4xl"
-            data-cms-field="contact_heading"
+            data-cms-field="contact.contact_heading"
           >
             {site.contact_heading}
           </h2>
           <p
             class="text-muted-foreground mt-4 max-w-md leading-relaxed"
-            data-cms-field="contact_subtext"
+            data-cms-field="contact.contact_subtext"
           >
             {site.contact_subtext}
           </p>
@@ -438,7 +435,7 @@ const gallery = site.gallery ?? [];
                 class="text-muted-foreground block text-xs tracking-[0.18em] uppercase"
                 >Phone</span
               >
-              <span class="mt-1 block font-medium" data-cms-field="phone"
+              <span class="mt-1 block font-medium" data-cms-field="contact.phone"
                 >{site.phone}</span
               >
             </a>
@@ -450,7 +447,7 @@ const gallery = site.gallery ?? [];
                 class="text-muted-foreground block text-xs tracking-[0.18em] uppercase"
                 >Email</span
               >
-              <span class="mt-1 block font-medium" data-cms-field="email"
+              <span class="mt-1 block font-medium" data-cms-field="contact.email"
                 >{site.email}</span
               >
             </a>
@@ -488,7 +485,7 @@ const gallery = site.gallery ?? [];
       <div
         class="text-muted-foreground mx-auto max-w-2xl px-5 py-8 text-xs"
       >
-        <p data-cms-field="footer_text">{site.footer_text}</p>
+        <p data-cms-field="contact.footer_text">{site.footer_text}</p>
       </div>
     </footer>
   </div>
