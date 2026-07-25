@@ -58,5 +58,14 @@ const {
         els.forEach((el) => io.observe(el));
       }
     </script>
+
+    <!-- CMS live-preview bridge — fetched only when embedded by the CMS iframe. -->
+    <script is:inline>
+      if (new URLSearchParams(location.search).has("cms-preview")) {
+        var s = document.createElement("script");
+        s.src = "/cms-preview.js";
+        document.head.appendChild(s);
+      }
+    </script>
   </body>
 </html>

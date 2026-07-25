@@ -2,6 +2,22 @@ media:
   input: public/media
   output: /media
 
+settings:
+  # Live URL of this site. Enables the CMS live-preview panel.
+  baseUrl: https://mohammadsamadi.com
+  preview:
+    # Single-page site: every content section renders on `/`, so all entries
+    # preview at the home route. (Default would be `/<name>`, which 404s here.)
+    paths:
+      identity: /
+      hero: /
+      about: /
+      contact: /
+      experience: /
+      skills: /
+      projects: /
+      gallery: /
+
 content:
   - name: identity
     label: Identity

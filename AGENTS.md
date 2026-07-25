@@ -8,6 +8,17 @@ astro dev --background
 
 Manage the background server with `astro dev stop`, `astro dev status`, and `astro dev logs`.
 
+## Pages CMS (`.pages.yml`)
+
+This site is edited through the Pages CMS, driven by `.pages.yml`. The CMS renders
+special UI for certain conventions (typed link/email/tel inputs, a live SEO
+preview, …).
+
+- **Before editing `.pages.yml`, read [docs/pages-cms.md](docs/pages-cms.md)** for
+  the exact field shapes.
+- When a new CMS feature/skill is added, **update `docs/pages-cms.md`** so this
+  guidance stays in sync.
+
 ## Documentation
 
 Full documentation: https://docs.astro.build
