@@ -1,0 +1,27 @@
+{
+  "home": {
+    "identity": {
+      "short_name": "Mohammad Samadi",
+      "avatar_url": "/media/mohammad-amin.webp"
+    },
+    "hero": {
+      "availability_label": "Available for work · Florida",
+      "headline": "Remodeling & handyman with 20+ years on the tools.",
+      "hero_bio": "Hi, I'm Mohammad Amin Samadi. With over 20 years of experience in construction, I’ve worked in painting, outdoor projects, tile installation, carpentry, plumbing, and more. I’m passionate about helping Florida homeowners create the homes they’ve always dreamed of through quality workmanship and attention to detail."
+    },
+    "sections": {
+      "about": "About",
+      "experience": "Experience",
+      "skills": "What I do",
+      "work": "Selected work",
+      "gallery": "Gallery",
+      "contact": "Contact"
+    },
+    "about": "I work directly with homeowners and contractors across Florida, no middlemen, no surprises. I show up when I say I will, keep the site clean, and don't call a job done until it's right.\n\nWhether it's a full kitchen gut or a long list of small fixes, I bring the same care and craftsmanship I've built over 20 years.",
+    "contact": {
+      "contact_heading": "Looking to hire? Let's talk.",
+      "contact_subtext": "Reach out anytime, happy to walk through my experience or come take a look at a project.",
+      "footer_text": "© 2026 Mohammad Amin Samadi · Remodeling & Handyman · Florida"
+    }
+  }
+}

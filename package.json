@@ -9,9 +9,13 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "cms:init": "cms-bridge init",
+    "cms:check": "cms-bridge check",
+    "cms:collection": "cms-bridge collection"
   },
   "dependencies": {
+    "@alisamadiillc/cms-bridge": "^0.6.1",
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.1.3",
     "tailwindcss": "^4.3.3"

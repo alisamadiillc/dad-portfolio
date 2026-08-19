@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "baseUrl": "https://mohammadsamadi.com",
+  "media": {
+    "input": "public/media",
+    "output": "/media"
+  },
+  "pages": {
+    "home": {
+      "route": "/"
+    }
+  },
+  "collections": [
+    {
+      "name": "experience",
+      "path": "src/data/collections/experience.json",
+      "fields": [
+        { "name": "period", "type": "string" },
+        { "name": "role", "type": "string", "required": true },
+        { "name": "company", "type": "string" },
+        { "name": "location", "type": "string" },
+        { "name": "description", "type": "text" }
+      ]
+    },
+    {
+      "name": "skills",
+      "label": "What I do",
+      "path": "src/data/collections/skills.json",
+      "fields": [
+        { "name": "label", "type": "string", "required": true }
+      ]
+    },
+    {
+      "name": "projects",
+      "label": "Selected work",
+      "path": "src/data/collections/projects.json",
+      "fields": [
+        { "name": "title", "type": "string", "required": true },
+        { "name": "cover_image_url", "label": "Image", "type": "image" }
+      ]
+    },
+    {
+      "name": "gallery",
+      "path": "src/data/collections/gallery.json",
+      "fields": [
+        { "name": "image_url", "label": "Image (before)", "type": "image", "required": true },
+        { "name": "secondary_image_url", "label": "After image (optional — enables before/after slider)", "type": "image" },
+        { "name": "description", "label": "Caption", "type": "string" }
+      ]
+    }
+  ]
+}

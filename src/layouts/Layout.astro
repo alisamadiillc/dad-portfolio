@@ -1,14 +1,20 @@
 ---
 import "../styles/global.css";
+import seo from "../data/seo.json";
 
 interface Props {
   title?: string;
   description?: string;
 }
 const {
-  title = "Mohammad Samadi",
-  description = "Portfolio and contact for Mohammad Samadi.",
+  title = seo.site.title || "Mohammad Samadi",
+  description = seo.site.description || "Portfolio and contact for Mohammad Samadi.",
 } = Astro.props;
+
+const favicon = seo.site.favicon || "/media/mohammad-amin.webp";
+const appleTouchIcon = seo.site.appleTouchIcon || favicon;
+const ogImage = seo.site.ogImage;
+const googleAnalytics = seo.site.googleAnalytics;
 ---
 
 <!doctype html>
@@ -16,13 +22,33 @@ const {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
-    <link rel="icon" type="image/webp" href="/media/mohammad-amin.webp" />
-    <link rel="apple-touch-icon" href="/media/mohammad-amin.webp" />
+    <link rel="icon" href={favicon} />
+    <link rel="apple-touch-icon" href={appleTouchIcon} />
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    {
+      googleAnalytics && (
+        <>
+          <script
+            is:inline
+            async
+            src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalytics}`}
+          />
+          <script is:inline define:vars={{ googleAnalytics }}>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() {
+              dataLayer.push(arguments);
+            }
+            gtag("js", new Date());
+            gtag("config", googleAnalytics);
+          </script>
+        </>
+      )
+    }
     <!-- Outfit (variable) — matches the Vite app's @fontsource-variable/outfit -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -56,15 +82,6 @@ const {
           { threshold: 0.2 }
         );
         els.forEach((el) => io.observe(el));
-      }
-    </script>
-
-    <!-- CMS live-preview bridge — fetched only when embedded by the CMS iframe. -->
-    <script is:inline>
-      if (new URLSearchParams(location.search).has("cms-preview")) {
-        var s = document.createElement("script");
-        s.src = "/cms-preview.js";
-        document.head.appendChild(s);
       }
     </script>
   </body>

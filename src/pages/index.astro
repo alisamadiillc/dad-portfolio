@@ -2,20 +2,27 @@
 import Layout from "../layouts/Layout.astro";
 import BeforeAfterSlider from "../components/BeforeAfterSlider.astro";
 import Lightbox from "../components/Lightbox.astro";
+import {
+  Heading1,
+  Heading2,
+  Text,
+  Image,
+} from "@alisamadiillc/cms-bridge/components";
 import seo from "../data/seo.json";
-import content from "../data/home.json";
-import projectsData from "../data/projects.json";
-import galleryData from "../data/gallery.json";
+import pages from "../data/pages.json";
+import variables from "../data/variables.json";
+import experience from "../data/collections/experience.json";
+import skills from "../data/collections/skills.json";
+import projects from "../data/collections/projects.json";
+import gallery from "../data/collections/gallery.json";
 
+const home = pages.home;
 const site = {
-  ...content.identity,
-  ...content.hero,
-  about: content.about,
-  ...content.contact,
-  experience: content.experience,
-  skills: content.skills,
-  ...projectsData,
-  ...galleryData,
+  ...variables,
+  ...home.identity,
+  ...home.hero,
+  about: home.about,
+  ...home.contact,
 };
 
 const NAV = [
@@ -32,16 +39,13 @@ const aboutParagraphs = (site.about ?? "")
   .split(/\n\s*\n/)
   .filter((p) => p.trim());
 
-// SEO meta — from the dedicated `seo` entry, with sensible fallbacks.
-const seoTitle = seo.seo?.title || site.name;
+// SEO meta — per-page overrides from seo.json, falling back to site defaults.
+const seoTitle = seo.pages.home.title || seo.site.title || site.name;
 const seoDescription =
-  seo.seo?.description ||
+  seo.pages.home.description ||
+  seo.site.description ||
   (aboutParagraphs[0] ?? site.hero_bio ?? "").replace(/\s+/g, " ").trim();
 
-const experience = site.experience ?? [];
-const skills = site.skills ?? [];
-const projects = site.projects ?? [];
-const gallery = site.gallery ?? [];
 ---
 
 <Layout title={seoTitle} description={seoDescription}>
@@ -53,11 +57,13 @@ const gallery = site.gallery ?? [];
       <div
         class="mx-auto flex h-16 max-w-2xl items-center justify-between px-5"
       >
-        <a
+        <Text
+          as="a"
           href="#top"
+          field="identity.short_name"
+          value={site.short_name}
           class="text-sm font-semibold tracking-tight"
-          data-cms-field="identity.short_name">{site.short_name}</a
-        >
+        />
         <nav class="hidden items-center gap-6 sm:flex">
           {
             NAV.map((item) => (
@@ -140,38 +146,39 @@ const gallery = site.gallery ?? [];
         </svg>
 
         <div class="relative">
-          <img
-            src={site.avatar_url}
+          <Image
+            field="identity.avatar_url"
+            value={site.avatar_url}
             alt={site.name}
             width="160"
             height="160"
-            data-cms-field="identity.avatar_url"
             class="bg-secondary text-foreground ring-border flex size-24 items-center justify-center rounded-full object-cover text-lg font-semibold ring-1 md:size-32 lg:size-40"
           />
 
           <div class="mt-6">
             <span
               class="bg-foreground text-background inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium"
-              data-cms-field="hero.availability_label"
             >
               <span class="size-1.5 rounded-full bg-emerald-400"></span>
-              {site.availability_label}
+              <Text
+                as="span"
+                field="hero.availability_label"
+                value={site.availability_label}
+              />
             </span>
           </div>
 
-          <h1
+          <Heading1
+            field="hero.headline"
+            value={site.headline}
             class="mt-6 text-4xl font-bold tracking-tight text-balance sm:text-5xl"
-            data-cms-field="hero.headline"
-          >
-            {site.headline}
-          </h1>
+          />
 
-          <p
+          <Text
+            field="hero.hero_bio"
+            value={site.hero_bio}
             class="text-muted-foreground mt-5 max-w-xl leading-relaxed"
-            data-cms-field="hero.hero_bio"
-          >
-            {site.hero_bio}
-          </p>
+          />
 
           <div class="mt-8 flex items-center gap-6">
             <a
@@ -196,17 +203,18 @@ const gallery = site.gallery ?? [];
         class="border-border/60 scroll-mt-20 border-t py-16"
       >
         <div data-reveal>
-          <p
+          <Text
+            field="sections.about"
+            value={home.sections.about}
             class="text-muted-foreground mb-6 text-xs font-medium tracking-[0.18em] uppercase"
-          >
-            About
-          </p>
-          <div
+          />
+          <Text
+            as="div"
+            field="about"
             class="text-foreground/90 space-y-4 leading-relaxed"
-            data-cms-field="about"
           >
             {aboutParagraphs.map((p) => <p>{p}</p>)}
-          </div>
+          </Text>
         </div>
       </section>
 
@@ -216,11 +224,11 @@ const gallery = site.gallery ?? [];
         class="border-border/60 scroll-mt-20 border-t py-16"
       >
         <div data-reveal>
-          <p
+          <Text
+            field="sections.experience"
+            value={home.sections.experience}
             class="text-muted-foreground mb-6 text-xs font-medium tracking-[0.18em] uppercase"
-          >
-            Experience
-          </p>
+          />
         </div>
         <div class="space-y-10">
           {
@@ -229,37 +237,23 @@ const gallery = site.gallery ?? [];
                 No experience added yet.
               </p>
             ) : (
-              experience.map((row, i) => (
-                <div data-reveal data-cms-field={`experience.${i}`}>
+              experience.map((row) => (
+                <div data-reveal>
                   <div class="grid gap-2 sm:grid-cols-[7rem_1fr] sm:gap-6">
-                    <p
-                      class="text-muted-foreground pt-0.5 text-sm"
-                      data-cms-field={`experience.${i}.period`}
-                    >
+                    <p class="text-muted-foreground pt-0.5 text-sm">
                       {row.period}
                     </p>
                     <div>
-                      <h3
-                        class="font-semibold tracking-tight"
-                        data-cms-field={`experience.${i}.role`}
-                      >
-                        {row.role}
-                      </h3>
+                      <h3 class="font-semibold tracking-tight">{row.role}</h3>
                       {(row.company || row.location) && (
-                        <p
-                          class="text-muted-foreground mt-0.5 text-sm"
-                          data-cms-field={`experience.${i}.company`}
-                        >
+                        <p class="text-muted-foreground mt-0.5 text-sm">
                           {[row.company, row.location]
                             .filter(Boolean)
                             .join(" · ")}
                         </p>
                       )}
                       {row.description && (
-                        <p
-                          class="text-foreground/80 mt-2 text-sm leading-relaxed"
-                          data-cms-field={`experience.${i}.description`}
-                        >
+                        <p class="text-foreground/80 mt-2 text-sm leading-relaxed">
                           {row.description}
                         </p>
                       )}
@@ -275,27 +269,22 @@ const gallery = site.gallery ?? [];
       <!-- What I do -->
       <section class="border-border/60 scroll-mt-20 border-t py-16">
         <div data-reveal>
-          <p
+          <Text
+            field="sections.skills"
+            value={home.sections.skills}
             class="text-muted-foreground mb-6 text-xs font-medium tracking-[0.18em] uppercase"
-          >
-            What I do
-          </p>
+          />
         </div>
         {
           skills.length === 0 ? (
             <p class="text-muted-foreground text-sm">No services added yet.</p>
           ) : (
             <div class="grid gap-3 sm:grid-cols-2">
-              {skills.map((row, i) => (
-                <div data-reveal data-cms-field={`skills.${i}`}>
+              {skills.map((row) => (
+                <div data-reveal>
                   <div class="border-border flex items-center gap-3 rounded-lg border px-4 py-3">
                     <span class="bg-foreground size-2 shrink-0 rounded-[2px]" />
-                    <span
-                      class="text-sm font-medium"
-                      data-cms-field={`skills.${i}.label`}
-                    >
-                      {row.label}
-                    </span>
+                    <span class="text-sm font-medium">{row.label}</span>
                   </div>
                 </div>
               ))}
@@ -307,19 +296,19 @@ const gallery = site.gallery ?? [];
       <!-- Selected work -->
       <section id="work" class="border-border/60 scroll-mt-20 border-t py-16">
         <div data-reveal>
-          <p
+          <Text
+            field="sections.work"
+            value={home.sections.work}
             class="text-muted-foreground mb-6 text-xs font-medium tracking-[0.18em] uppercase"
-          >
-            Selected work
-          </p>
+          />
         </div>
         {
           projects.length === 0 ? (
             <p class="text-muted-foreground text-sm">No projects added yet.</p>
           ) : (
             <div class="grid gap-5 sm:grid-cols-2">
-              {projects.map((row, i) => (
-                <div data-reveal data-cms-field={`projects.${i}`}>
+              {projects.map((row) => (
+                <div data-reveal>
                   <figure>
                     <div class="bg-secondary aspect-[4/3] overflow-hidden rounded-xl">
                       {row.cover_image_url && (
@@ -329,15 +318,11 @@ const gallery = site.gallery ?? [];
                           loading="lazy"
                           data-lightbox={row.cover_image_url}
                           data-lightbox-alt={row.title}
-                          data-cms-field={`projects.${i}.cover_image_url`}
                           class="size-full cursor-zoom-in object-cover"
                         />
                       )}
                     </div>
-                    <figcaption
-                      class="mt-3 text-sm font-semibold"
-                      data-cms-field={`projects.${i}.title`}
-                    >
+                    <figcaption class="mt-3 text-sm font-semibold">
                       {row.title}
                     </figcaption>
                   </figure>
@@ -357,13 +342,15 @@ const gallery = site.gallery ?? [];
           class="border-border/60 scroll-mt-20 border-t py-16"
         >
           <div data-reveal class="mx-auto max-w-2xl px-5">
-            <p class="text-muted-foreground mb-6 text-xs font-medium tracking-[0.18em] uppercase">
-              Gallery
-            </p>
+            <Text
+              field="sections.gallery"
+              value={home.sections.gallery}
+              class="text-muted-foreground mb-6 text-xs font-medium tracking-[0.18em] uppercase"
+            />
           </div>
           <div class="mx-auto grid max-w-7xl gap-5 px-5 sm:grid-cols-2 md:grid-cols-3">
-            {gallery.map((row, i) => (
-              <div data-reveal data-cms-field={`gallery.${i}`}>
+            {gallery.map((row) => (
+              <div data-reveal>
                 <figure class="relative overflow-hidden rounded-xl">
                   <div class="bg-secondary aspect-[4/3] overflow-hidden">
                     {row.secondary_image_url ? (
@@ -379,16 +366,12 @@ const gallery = site.gallery ?? [];
                         loading="lazy"
                         data-lightbox={row.image_url}
                         data-lightbox-alt={row.description || "Gallery image"}
-                        data-cms-field={`gallery.${i}.image_url`}
                         class="size-full cursor-zoom-in object-cover"
                       />
                     )}
                   </div>
                   {row.description && (
-                    <figcaption
-                      class="pointer-events-none absolute right-0 bottom-0 left-0 bg-gradient-to-t from-black/70 to-transparent p-3 text-sm text-white md:text-base"
-                      data-cms-field={`gallery.${i}.description`}
-                    >
+                    <figcaption class="pointer-events-none absolute right-0 bottom-0 left-0 bg-gradient-to-t from-black/70 to-transparent p-3 text-sm text-white md:text-base">
                       {row.description}
                     </figcaption>
                   )}
@@ -407,24 +390,22 @@ const gallery = site.gallery ?? [];
         class="border-border/60 scroll-mt-20 border-t py-16"
       >
         <div data-reveal>
-          <p
+          <Text
+            field="sections.contact"
+            value={home.sections.contact}
             class="text-muted-foreground mb-6 text-xs font-medium tracking-[0.18em] uppercase"
-          >
-            Contact
-          </p>
+          />
 
-          <h2
+          <Heading2
+            field="contact.contact_heading"
+            value={site.contact_heading}
             class="text-3xl font-bold tracking-tight sm:text-4xl"
-            data-cms-field="contact.contact_heading"
-          >
-            {site.contact_heading}
-          </h2>
-          <p
+          />
+          <Text
+            field="contact.contact_subtext"
+            value={site.contact_subtext}
             class="text-muted-foreground mt-4 max-w-md leading-relaxed"
-            data-cms-field="contact.contact_subtext"
-          >
-            {site.contact_subtext}
-          </p>
+          />
 
           <div class="mt-8 grid gap-4 sm:grid-cols-2">
             <a
@@ -435,9 +416,12 @@ const gallery = site.gallery ?? [];
                 class="text-muted-foreground block text-xs tracking-[0.18em] uppercase"
                 >Phone</span
               >
-              <span class="mt-1 block font-medium" data-cms-field="contact.phone"
-                >{site.phone}</span
-              >
+              <Text
+                as="span"
+                field="phone"
+                value={site.phone}
+                class="mt-1 block font-medium"
+              />
             </a>
             <a
               href={`mailto:${site.email}`}
@@ -447,9 +431,12 @@ const gallery = site.gallery ?? [];
                 class="text-muted-foreground block text-xs tracking-[0.18em] uppercase"
                 >Email</span
               >
-              <span class="mt-1 block font-medium" data-cms-field="contact.email"
-                >{site.email}</span
-              >
+              <Text
+                as="span"
+                field="email"
+                value={site.email}
+                class="mt-1 block font-medium"
+              />
             </a>
           </div>
 
@@ -485,7 +472,7 @@ const gallery = site.gallery ?? [];
       <div
         class="text-muted-foreground mx-auto max-w-2xl px-5 py-8 text-xs"
       >
-        <p data-cms-field="contact.footer_text">{site.footer_text}</p>
+        <Text field="contact.footer_text" value={site.footer_text} />
       </div>
     </footer>
   </div>

@@ -1,6 +1,17 @@
 {
-  "seo": {
+  "site": {
     "title": "Mohammad Amin Samadi",
-    "description": "Homeowner-direct renovation and handyman work across Florida — kitchens, repairs, and finish carpentry, done right with 20 years of craftsmanship."
+    "description": "Homeowner-direct renovation and handyman work across Florida — kitchens, repairs, and finish carpentry, done right with 20 years of craftsmanship.",
+    "favicon": "/media/mohammad-amin.webp",
+    "ogImage": "",
+    "appleTouchIcon": "/media/mohammad-amin.webp",
+    "googleAnalytics": ""
+  },
+  "pages": {
+    "home": {
+      "title": "",
+      "description": "",
+      "ogImage": ""
+    }
   }
 }
