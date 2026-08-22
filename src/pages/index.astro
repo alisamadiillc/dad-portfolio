@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import BeforeAfterSlider from "../components/BeforeAfterSlider.astro";
+import Carousel from "../components/Carousel.astro";
 import Lightbox from "../components/Lightbox.astro";
 import {
   Heading1,
@@ -353,20 +354,16 @@ const seoDescription =
               <div data-reveal>
                 <figure class="relative overflow-hidden rounded-xl">
                   <div class="bg-secondary aspect-[4/3] overflow-hidden">
-                    {row.secondary_image_url ? (
+                    {row.comparison && row.images.length >= 2 ? (
                       <BeforeAfterSlider
-                        beforeSrc={row.image_url}
-                        afterSrc={row.secondary_image_url}
+                        beforeSrc={row.images[0]}
+                        afterSrc={row.images[1]}
                         alt={row.description || "Before and after comparison"}
                       />
                     ) : (
-                      <img
-                        src={row.image_url}
+                      <Carousel
+                        images={row.images}
                         alt={row.description || "Gallery image"}
-                        loading="lazy"
-                        data-lightbox={row.image_url}
-                        data-lightbox-alt={row.description || "Gallery image"}
-                        class="size-full cursor-zoom-in object-cover"
                       />
                     )}
                   </div>

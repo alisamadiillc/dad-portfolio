@@ -1,12 +1,18 @@
 [
   {
-    "image_url": "/media/gallery/bathroom-before.jpeg",
-    "secondary_image_url": "/media/gallery/bathroom-after.webp",
+    "comparison": true,
+    "images": [
+      "/media/gallery/bathroom-before.jpeg",
+      "/media/gallery/bathroom-after.webp"
+    ],
     "description": ""
   },
   {
-    "image_url": "/media/gallery/bathroom-2-before.jpeg",
-    "secondary_image_url": "/media/gallery/bathroom-2-after.jpeg",
+    "comparison": true,
+    "images": [
+      "/media/gallery/bathroom-2-before.jpeg",
+      "/media/gallery/bathroom-2-after.jpeg"
+    ],
     "description": ""
   }
 ]

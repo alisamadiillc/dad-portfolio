@@ -1,0 +1,178 @@
+---
+// Multi-image card carousel. One slide visible at a time; prev/next arrows,
+// dot indicators, pointer swipe, and keyboard arrows cycle the images. Each
+// slide opts into the shared Lightbox via `data-lightbox`. A single image
+// renders bare (no controls). Styling mirrors BeforeAfterSlider's overlay pills.
+interface Props {
+  images: string[];
+  alt?: string;
+  class?: string;
+}
+const { images, alt = "", class: className = "" } = Astro.props;
+const single = images.length <= 1;
+---
+
+{
+  single ? (
+    <img
+      src={images[0]}
+      alt={alt}
+      loading="lazy"
+      data-lightbox={images[0]}
+      data-lightbox-alt={alt}
+      class:list={["size-full cursor-zoom-in object-cover", className]}
+    />
+  ) : (
+    <div
+      data-carousel
+      class:list={["group relative size-full overflow-hidden select-none", className]}
+    >
+      <div
+        data-track
+        class="flex size-full transition-transform duration-300 ease-out"
+        style="transform: translateX(0%)"
+      >
+        {images.map((src) => (
+          <img
+            src={src}
+            alt={alt}
+            loading="lazy"
+            draggable="false"
+            data-lightbox={src}
+            data-lightbox-alt={alt}
+            class="size-full shrink-0 basis-full cursor-zoom-in object-cover"
+          />
+        ))}
+      </div>
+
+      <button
+        type="button"
+        data-prev
+        aria-label="Previous image"
+        class="absolute top-1/2 left-2 -translate-y-1/2 rounded-full border border-white bg-black/60 p-1.5 text-white outline-none focus-visible:ring-2 focus-visible:ring-white"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="size-4"
+        >
+          <path d="m15 18-6-6 6-6" />
+        </svg>
+      </button>
+      <button
+        type="button"
+        data-next
+        aria-label="Next image"
+        class="absolute top-1/2 right-2 -translate-y-1/2 rounded-full border border-white bg-black/60 p-1.5 text-white outline-none focus-visible:ring-2 focus-visible:ring-white"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="size-4"
+        >
+          <path d="m9 18 6-6-6-6" />
+        </svg>
+      </button>
+
+      <div
+        data-dots
+        class="pointer-events-none absolute bottom-2 left-1/2 flex -translate-x-1/2 gap-1.5"
+      >
+        {images.map((_, i) => (
+          <span
+            data-dot
+            aria-current={i === 0 ? "true" : "false"}
+            class="size-1.5 rounded-full bg-white/50 shadow-[0_0_2px_rgba(0,0,0,0.5)] aria-[current=true]:bg-white"
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+<script>
+  function initCarousel(root: HTMLElement) {
+    const track = root.querySelector<HTMLElement>("[data-track]");
+    const prev = root.querySelector<HTMLElement>("[data-prev]");
+    const next = root.querySelector<HTMLElement>("[data-next]");
+    const dots = Array.from(root.querySelectorAll<HTMLElement>("[data-dot]"));
+    if (!track) return;
+
+    const count = track.children.length;
+    let index = 0;
+
+    const apply = () => {
+      track.style.transform = `translateX(-${index * 100}%)`;
+      dots.forEach((dot, i) =>
+        dot.setAttribute("aria-current", i === index ? "true" : "false"),
+      );
+    };
+
+    const go = (delta: number) => {
+      index = (index + delta + count) % count;
+      apply();
+    };
+
+    prev?.addEventListener("click", () => go(-1));
+    next?.addEventListener("click", () => go(1));
+
+    root.setAttribute("tabindex", "0");
+    root.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") {
+        go(-1);
+        e.preventDefault();
+      } else if (e.key === "ArrowRight") {
+        go(1);
+        e.preventDefault();
+      }
+    });
+
+    // Swipe — bound on the track (the images), NOT root, so pointer capture
+    // never steals the arrow-button clicks that sit outside the track.
+    let startX: number | null = null;
+    let swiped = false;
+    track.addEventListener("pointerdown", (e) => {
+      startX = e.clientX;
+      swiped = false;
+      track.setPointerCapture(e.pointerId);
+    });
+    const end = (e: PointerEvent) => {
+      if (startX === null) return;
+      const dx = e.clientX - startX;
+      startX = null;
+      if (Math.abs(dx) > 40) {
+        swiped = true;
+        go(dx < 0 ? 1 : -1);
+      }
+    };
+    track.addEventListener("pointerup", end);
+    track.addEventListener("pointercancel", () => {
+      startX = null;
+    });
+    // Stop a swipe from also opening the Lightbox (its click is bound on the img).
+    track.addEventListener(
+      "click",
+      (e) => {
+        if (swiped) {
+          swiped = false;
+          e.stopPropagation();
+        }
+      },
+      true,
+    );
+  }
+
+  document
+    .querySelectorAll<HTMLElement>("[data-carousel]")
+    .forEach(initCarousel);
+</script>

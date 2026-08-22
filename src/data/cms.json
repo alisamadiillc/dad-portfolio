@@ -38,15 +38,6 @@
         { "name": "title", "type": "string", "required": true },
         { "name": "cover_image_url", "label": "Image", "type": "image" }
       ]
-    },
-    {
-      "name": "gallery",
-      "path": "src/data/collections/gallery.json",
-      "fields": [
-        { "name": "image_url", "label": "Image (before)", "type": "image", "required": true },
-        { "name": "secondary_image_url", "label": "After image (optional — enables before/after slider)", "type": "image" },
-        { "name": "description", "label": "Caption", "type": "string" }
-      ]
     }
   ]
 }
