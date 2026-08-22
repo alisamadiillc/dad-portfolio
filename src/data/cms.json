@@ -38,6 +38,15 @@
         { "name": "title", "type": "string", "required": true },
         { "name": "cover_image_url", "label": "Image", "type": "image" }
       ]
+    },
+    {
+      "name": "gallery",
+      "path": "src/data/collections/gallery.json",
+      "fields": [
+        { "name": "comparison", "label": "Before/after comparison", "type": "boolean" },
+        { "name": "images", "label": "Images", "type": "image", "multiple": true, "required": true },
+        { "name": "description", "label": "Caption", "type": "string" }
+      ]
     }
   ]
 }
