@@ -13,14 +13,14 @@ const { beforeSrc, afterSrc, alt = "", class: className = "" } = Astro.props;
 
 <div
   data-baslider
-  class:list={["relative size-full overflow-hidden select-none", className]}
+  class:list={["relative w-full overflow-hidden select-none", className]}
 >
   <img
     src={afterSrc}
     alt={alt}
     loading="lazy"
     draggable="false"
-    class="size-full object-cover"
+    class="block w-full"
   />
   <img
     data-before
@@ -76,6 +76,31 @@ const { beforeSrc, afterSrc, alt = "", class: className = "" } = Astro.props;
     class="pointer-events-none absolute top-2 right-2 rounded-full bg-black/60 px-2 py-0.5 text-xs font-medium text-white"
     >After</span
   >
+
+  <button
+    type="button"
+    data-expand
+    data-lightbox={afterSrc}
+    data-lightbox-alt={alt}
+    aria-label="View full image"
+    class="absolute right-2 bottom-2 rounded-full border border-white bg-black/60 p-1.5 text-white outline-none focus-visible:ring-2 focus-visible:ring-white"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class="size-4"
+    >
+      <path d="M15 3h6v6"></path>
+      <path d="M9 21H3v-6"></path>
+      <path d="M21 3l-7 7"></path>
+      <path d="M3 21l7-7"></path>
+    </svg>
+  </button>
 </div>
 
 <script>
@@ -85,7 +110,12 @@ const { beforeSrc, afterSrc, alt = "", class: className = "" } = Astro.props;
     const before = root.querySelector<HTMLElement>("[data-before]");
     const line = root.querySelector<HTMLElement>("[data-line]");
     const handle = root.querySelector<HTMLElement>("[data-handle]");
+    const expand = root.querySelector<HTMLElement>("[data-expand]");
     if (!before || !line || !handle) return;
+
+    // Keep the maximize button from starting a divider drag; its click still
+    // bubbles to the shared Lightbox (bound via data-lightbox).
+    expand?.addEventListener("pointerdown", (e) => e.stopPropagation());
 
     let pos = 50;
     let dragging = false;

@@ -20,16 +20,16 @@ const single = images.length <= 1;
       loading="lazy"
       data-lightbox={images[0]}
       data-lightbox-alt={alt}
-      class:list={["size-full cursor-zoom-in object-cover", className]}
+      class:list={["block w-full cursor-zoom-in", className]}
     />
   ) : (
     <div
       data-carousel
-      class:list={["group relative size-full overflow-hidden select-none", className]}
+      class:list={["group relative w-full overflow-hidden select-none", className]}
     >
       <div
         data-track
-        class="flex size-full transition-transform duration-300 ease-out"
+        class="flex w-full items-start transition-transform duration-300 ease-out"
         style="transform: translateX(0%)"
       >
         {images.map((src) => (
@@ -40,7 +40,7 @@ const single = images.length <= 1;
             draggable="false"
             data-lightbox={src}
             data-lightbox-alt={alt}
-            class="size-full shrink-0 basis-full cursor-zoom-in object-cover"
+            class="block w-full shrink-0 basis-full cursor-zoom-in"
           />
         ))}
       </div>

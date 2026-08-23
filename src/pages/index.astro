@@ -385,26 +385,22 @@ const structuredData = {
               />
             </div>
             <Region type="collection" name="gallery">
-              <div class="mx-auto grid max-w-7xl gap-5 px-5 sm:grid-cols-2 md:grid-cols-3">
+              <div class="mx-auto max-w-7xl columns-1 gap-5 px-5 sm:columns-2 md:columns-3">
                 {gallery.map((row) => (
-                  <div data-reveal>
-                    <figure class="relative overflow-hidden rounded-xl">
-                      <div class="bg-secondary aspect-[4/3] overflow-hidden">
-                        {row.comparison && row.images.length >= 2 ? (
-                          <BeforeAfterSlider
-                            beforeSrc={row.images[0]}
-                            afterSrc={row.images[1]}
-                            alt={
-                              row.description || "Before and after comparison"
-                            }
-                          />
-                        ) : (
-                          <Carousel
-                            images={row.images}
-                            alt={row.description || "Gallery image"}
-                          />
-                        )}
-                      </div>
+                  <div data-reveal class="mb-5 break-inside-avoid">
+                    <figure class="bg-secondary relative overflow-hidden rounded-xl">
+                      {row.comparison && row.images.length >= 2 ? (
+                        <BeforeAfterSlider
+                          beforeSrc={row.images[0]}
+                          afterSrc={row.images[1]}
+                          alt={row.description || "Before and after comparison"}
+                        />
+                      ) : (
+                        <Carousel
+                          images={row.images}
+                          alt={row.description || "Gallery image"}
+                        />
+                      )}
                       {row.description && (
                         <figcaption class="pointer-events-none absolute right-0 bottom-0 left-0 bg-gradient-to-t from-black/70 to-transparent p-3 text-sm text-white md:text-base">
                           {row.description}
