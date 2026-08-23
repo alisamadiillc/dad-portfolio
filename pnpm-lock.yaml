@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@alisamadiillc/cms-bridge':
-        specifier: ^0.6.1
-        version: 0.6.1(astro@7.1.3(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(jiti@2.7.0))
+        specifier: ^0.7.5
+        version: 0.7.5(astro@7.1.3(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(jiti@2.7.0))
       '@tailwindcss/vite':
         specifier: ^4.3.3
         version: 4.3.3(vite@8.1.5(esbuild@0.28.1)(jiti@2.7.0))
@@ -23,8 +23,8 @@ importers:
 
 packages:
 
-  '@alisamadiillc/cms-bridge@0.6.1':
-    resolution: {integrity: sha512-svrCQC7re82LYluS5fCkqIxQDSBCilvAQNi+rcxeAB+la1scxf/UTdrTMS0mO1ItIUxuzfQpnxlCJRswg0dHxw==}
+  '@alisamadiillc/cms-bridge@0.7.5':
+    resolution: {integrity: sha512-oi8qM+tzRzL1mmaBHnRTl1FGI4Tz4fh4GZl0T3KjjSHRaIYs9prjLq7Nmhq2nSH5e8rm4MkvPaBNQYtQ57Fc7A==}
     hasBin: true
     peerDependencies:
       astro: '>=4.0.0'
@@ -1590,7 +1590,7 @@ packages:
 
 snapshots:
 
-  '@alisamadiillc/cms-bridge@0.6.1(astro@7.1.3(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(jiti@2.7.0))':
+  '@alisamadiillc/cms-bridge@0.7.5(astro@7.1.3(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(jiti@2.7.0))':
     dependencies:
       '@astrojs/compiler': 2.13.1
       es-module-lexer: 1.7.0
