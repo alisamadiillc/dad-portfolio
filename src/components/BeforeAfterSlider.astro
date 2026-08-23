@@ -81,6 +81,8 @@ const { beforeSrc, afterSrc, alt = "", class: className = "" } = Astro.props;
     type="button"
     data-expand
     data-lightbox={afterSrc}
+    data-lightbox-group={JSON.stringify([beforeSrc, afterSrc])}
+    data-lightbox-index="1"
     data-lightbox-alt={alt}
     aria-label="View full image"
     class="absolute right-2 bottom-2 rounded-full border border-white bg-black/60 p-1.5 text-white outline-none focus-visible:ring-2 focus-visible:ring-white"

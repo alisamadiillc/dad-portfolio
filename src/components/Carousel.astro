@@ -32,18 +32,43 @@ const single = images.length <= 1;
         class="flex w-full items-start transition-transform duration-300 ease-out"
         style="transform: translateX(0%)"
       >
-        {images.map((src) => (
+        {images.map((src, i) => (
           <img
             src={src}
             alt={alt}
             loading="lazy"
             draggable="false"
             data-lightbox={src}
+            data-lightbox-group={JSON.stringify(images)}
+            data-lightbox-index={i}
             data-lightbox-alt={alt}
             class="block w-full shrink-0 basis-full cursor-zoom-in"
           />
         ))}
       </div>
+
+      <button
+        type="button"
+        data-max
+        aria-label="View full size"
+        class="absolute top-2 right-2 rounded-full border border-white bg-black/60 p-1.5 text-white outline-none focus-visible:ring-2 focus-visible:ring-white"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="size-4"
+        >
+          <path d="M15 3h6v6" />
+          <path d="M9 21H3v-6" />
+          <path d="M21 3l-7 7" />
+          <path d="M3 21l7-7" />
+        </svg>
+      </button>
 
       <button
         type="button"
@@ -123,16 +148,62 @@ const single = images.length <= 1;
       apply();
     };
 
-    prev?.addEventListener("click", () => go(-1));
-    next?.addEventListener("click", () => go(1));
+    // Autoplay — advance every 2s. Skipped for reduced-motion; paused on hover
+    // and while the tab is hidden; the timer restarts after any manual nav so
+    // it never fights the user.
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let timer: number | null = null;
+    const stopAuto = () => {
+      if (timer !== null) {
+        window.clearInterval(timer);
+        timer = null;
+      }
+    };
+    const startAuto = () => {
+      if (reduce || count < 2 || timer !== null) return;
+      timer = window.setInterval(() => go(1), 2000);
+    };
+    const restart = () => {
+      stopAuto();
+      startAuto();
+    };
+
+    prev?.addEventListener("click", () => {
+      go(-1);
+      restart();
+    });
+    next?.addEventListener("click", () => {
+      go(1);
+      restart();
+    });
+
+    root.addEventListener("mouseenter", stopAuto);
+    root.addEventListener("mouseleave", startAuto);
+    document.addEventListener("visibilitychange", () =>
+      document.hidden ? stopAuto() : startAuto(),
+    );
+    startAuto();
+
+    // Maximize → open the shared lightbox at the currently-visible slide,
+    // passing the whole set so it can be navigated fullscreen.
+    const maxBtn = root.querySelector<HTMLElement>("[data-max]");
+    maxBtn?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const imgs = Array.from(track.querySelectorAll<HTMLImageElement>("img"));
+      const srcs = imgs.map((im) => im.getAttribute("src") || "");
+      const alt = imgs[0]?.getAttribute("alt") || "";
+      (window as any).__lightbox?.open(srcs, index, alt);
+    });
 
     root.setAttribute("tabindex", "0");
     root.addEventListener("keydown", (e) => {
       if (e.key === "ArrowLeft") {
         go(-1);
+        restart();
         e.preventDefault();
       } else if (e.key === "ArrowRight") {
         go(1);
+        restart();
         e.preventDefault();
       }
     });
@@ -153,6 +224,7 @@ const single = images.length <= 1;
       if (Math.abs(dx) > 40) {
         swiped = true;
         go(dx < 0 ? 1 : -1);
+        restart();
       }
     };
     track.addEventListener("pointerup", end);
