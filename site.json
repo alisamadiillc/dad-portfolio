@@ -1,0 +1,84 @@
+{
+  "seo": {
+    "site": {
+      "title": "Mohammad Amin Samadi",
+      "description": "Homeowner-direct renovation and handyman work across Florida — kitchens, repairs, and finish carpentry, done right with 20 years of craftsmanship.",
+      "favicon": "/media/mohammad-amin.webp",
+      "ogImage": "",
+      "appleTouchIcon": "/media/mohammad-amin.webp",
+      "googleAnalytics": ""
+    },
+    "pages": {
+      "home": {
+        "title": "",
+        "description": "",
+        "ogImage": ""
+      }
+    }
+  },
+  "cms": {
+    "version": 1,
+    "baseUrl": "https://mohammadsamadi.com",
+    "media": {
+      "input": "public/media",
+      "output": "/media"
+    },
+    "pages": {
+      "home": {
+        "route": "/"
+      }
+    },
+    "collections": [
+      {
+        "name": "experience",
+        "path": "src/data/collections/experience.json",
+        "fields": [
+          { "name": "period", "type": "string" },
+          { "name": "role", "type": "string", "required": true },
+          { "name": "company", "type": "string" },
+          { "name": "location", "type": "string" },
+          { "name": "description", "type": "text" }
+        ]
+      },
+      {
+        "name": "skills",
+        "label": "What I do",
+        "path": "src/data/collections/skills.json",
+        "fields": [
+          { "name": "label", "type": "string", "required": true }
+        ]
+      },
+      {
+        "name": "projects",
+        "label": "Selected work",
+        "path": "src/data/collections/projects.json",
+        "fields": [
+          { "name": "title", "type": "string", "required": true },
+          { "name": "cover_image_url", "label": "Image", "type": "image" }
+        ]
+      },
+      {
+        "name": "gallery",
+        "path": "src/data/collections/gallery.json",
+        "fields": [
+          { "name": "comparison", "label": "Before/after comparison", "type": "boolean" },
+          { "name": "images", "label": "Images", "type": "image", "multiple": true, "required": true },
+          { "name": "description", "label": "Caption", "type": "string" }
+        ]
+      }
+    ]
+  },
+  "variables": {
+    "name": "Mohammad Amin Samadi",
+    "phone": "503-991-4128",
+    "email": "masamadi.sfr@gmail.com",
+    "address": {
+      "street": "",
+      "city": "",
+      "region": "Florida",
+      "zip": "",
+      "mapsUrl": ""
+    },
+    "socials": []
+  }
+}

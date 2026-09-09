@@ -8,6 +8,9 @@ export default defineConfig({
   site: "https://mohammadsamadi.com",
   vite: {
     plugins: [tailwindcss()],
+    server: {
+      allowedHosts: [".sslip.io", ".alisamadii.com"],
+    },
   },
 
   integrations: [cmsBridge()],

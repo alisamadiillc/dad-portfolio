@@ -10,14 +10,14 @@ import {
   Image,
   Region,
 } from "@alisamadiillc/cms-bridge/components";
-import seo from "../data/seo.json";
-import pages from "../data/pages.json";
-import variables from "../data/variables.json";
+import siteData from "site.json";
+import pages from "pages.json";
 import experience from "../data/collections/experience.json";
 import skills from "../data/collections/skills.json";
 import projects from "../data/collections/projects.json";
 import gallery from "../data/collections/gallery.json";
-import cms from "../data/cms.json";
+
+const { seo, cms, variables } = siteData;
 
 const home = pages.home;
 const site = {
