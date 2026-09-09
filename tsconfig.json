@@ -3,8 +3,9 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "site.json": ["./site.json"],
-      "pages.json": ["./pages.json"]
+      "_site.json": ["./_site.json"],
+      "_pages.json": ["./_pages.json"],
+      "_collections/*": ["./_collections/*"]
     }
   },
   "include": [".astro/types.d.ts", "**/*"],
