@@ -41,6 +41,13 @@ const aboutParagraphs = (site.about ?? "")
   .split(/\n\s*\n/)
   .filter((p) => p.trim());
 
+// Hero work previews — the last image of each gallery row is the finished
+// result, so surface those as a teaser strip linking to the gallery.
+const heroWorks = gallery
+  .map((row) => row.gallery[row.gallery.length - 1])
+  .filter(Boolean)
+  .slice(0, 3);
+
 // SEO meta — per-page overrides from seo.json, falling back to site defaults.
 const seoTitle = seo.pages.home.title || seo.site.title || variables.name;
 const seoDescription =
@@ -213,6 +220,26 @@ const structuredData = {
                 View experience
               </a>
             </div>
+
+            {
+              heroWorks.length > 0 && (
+                <a href="#gallery" class="group mt-12 block">
+                  <span class="grid grid-cols-3 gap-3">
+                    {heroWorks.map((src) => (
+                      <img
+                        src={src}
+                        alt="Finished work"
+                        loading="lazy"
+                        class="aspect-square w-full rounded-xl bg-black object-cover"
+                      />
+                    ))}
+                  </span>
+                  <span class="text-muted-foreground group-hover:text-foreground mt-3 inline-block text-sm font-medium transition-colors">
+                    Recent work →
+                  </span>
+                </a>
+              )
+            }
           </div>
         </section>
 
@@ -388,17 +415,19 @@ const structuredData = {
               <div class="mx-auto max-w-7xl columns-1 gap-5 px-5 sm:columns-2 md:columns-3">
                 {gallery.map((row) => (
                   <div data-reveal class="mb-5 break-inside-avoid">
-                    <figure class="bg-secondary relative overflow-hidden rounded-xl">
+                    <figure class="relative overflow-hidden rounded-xl bg-black">
                       {row.comparison && row.gallery.length >= 2 ? (
                         <BeforeAfterSlider
                           beforeSrc={row.gallery[0]}
                           afterSrc={row.gallery[1]}
                           alt={row.description || "Before and after comparison"}
+                          class="aspect-square"
                         />
                       ) : (
                         <Carousel
                           images={row.gallery}
                           alt={row.description || "Gallery image"}
+                          class="aspect-square"
                         />
                       )}
                       {row.description && (

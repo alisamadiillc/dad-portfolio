@@ -20,7 +20,7 @@ const single = images.length <= 1;
       loading="lazy"
       data-lightbox={images[0]}
       data-lightbox-alt={alt}
-      class:list={["block w-full cursor-zoom-in", className]}
+      class:list={["block w-full object-contain", "cursor-zoom-in", className]}
     />
   ) : (
     <div
@@ -29,7 +29,7 @@ const single = images.length <= 1;
     >
       <div
         data-track
-        class="flex w-full items-start transition-transform duration-300 ease-out"
+        class="flex h-full w-full items-stretch transition-transform duration-300 ease-out"
         style="transform: translateX(0%)"
       >
         {images.map((src, i) => (
@@ -42,7 +42,7 @@ const single = images.length <= 1;
             data-lightbox-group={JSON.stringify(images)}
             data-lightbox-index={i}
             data-lightbox-alt={alt}
-            class="block w-full shrink-0 basis-full cursor-zoom-in"
+            class="block h-full w-full shrink-0 basis-full cursor-zoom-in object-contain"
           />
         ))}
       </div>

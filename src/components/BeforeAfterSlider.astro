@@ -20,7 +20,7 @@ const { beforeSrc, afterSrc, alt = "", class: className = "" } = Astro.props;
     alt={alt}
     loading="lazy"
     draggable="false"
-    class="block w-full"
+    class="block h-full w-full object-contain"
   />
   <img
     data-before
@@ -29,7 +29,7 @@ const { beforeSrc, afterSrc, alt = "", class: className = "" } = Astro.props;
     aria-hidden="true"
     loading="lazy"
     draggable="false"
-    class="absolute inset-0 size-full object-cover"
+    class="absolute inset-0 size-full object-contain"
     style="clip-path: inset(0 50% 0 0)"
   />
 
