@@ -1,7 +1,7 @@
 [
   {
     "comparison": false,
-    "images": [
+    "gallery": [
       "https://ik.imagekit.io/swhev80igq/Dad%20Portfolio/WhatsApp%20Image%202026-08-19%20at%2011.02.22.jpeg",
       "https://ik.imagekit.io/swhev80igq/Dad%20Portfolio/WhatsApp%20Image%202026-08-20%20at%2008.52.37.jpeg?updatedAt=1787513731286",
       "https://ik.imagekit.io/swhev80igq/Dad%20Portfolio/WhatsApp%20Image%202026-08-21%20at%2010.18.39.jpeg?updatedAt=1787513730489"
@@ -10,7 +10,7 @@
   },
   {
     "comparison": true,
-    "images": [
+    "gallery": [
       "/media/gallery/bathroom-before.jpeg",
       "/media/gallery/bathroom-after.webp"
     ],
@@ -18,7 +18,7 @@
   },
   {
     "comparison": true,
-    "images": [
+    "gallery": [
       "/media/gallery/bathroom-2-before.jpeg",
       "/media/gallery/bathroom-2-after.jpeg"
     ],

@@ -389,15 +389,15 @@ const structuredData = {
                 {gallery.map((row) => (
                   <div data-reveal class="mb-5 break-inside-avoid">
                     <figure class="bg-secondary relative overflow-hidden rounded-xl">
-                      {row.comparison && row.images.length >= 2 ? (
+                      {row.comparison && row.gallery.length >= 2 ? (
                         <BeforeAfterSlider
-                          beforeSrc={row.images[0]}
-                          afterSrc={row.images[1]}
+                          beforeSrc={row.gallery[0]}
+                          afterSrc={row.gallery[1]}
                           alt={row.description || "Before and after comparison"}
                         />
                       ) : (
                         <Carousel
-                          images={row.images}
+                          images={row.gallery}
                           alt={row.description || "Gallery image"}
                         />
                       )}

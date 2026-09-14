@@ -27,46 +27,7 @@
       "home": {
         "route": "/"
       }
-    },
-    "collections": [
-      {
-        "name": "experience",
-        "path": "_collections/experience.json",
-        "fields": [
-          { "name": "period", "type": "string" },
-          { "name": "role", "type": "string", "required": true },
-          { "name": "company", "type": "string" },
-          { "name": "location", "type": "string" },
-          { "name": "description", "type": "text" }
-        ]
-      },
-      {
-        "name": "skills",
-        "label": "What I do",
-        "path": "_collections/skills.json",
-        "fields": [
-          { "name": "label", "type": "string", "required": true }
-        ]
-      },
-      {
-        "name": "projects",
-        "label": "Selected work",
-        "path": "_collections/projects.json",
-        "fields": [
-          { "name": "title", "type": "string", "required": true },
-          { "name": "cover_image_url", "label": "Image", "type": "image" }
-        ]
-      },
-      {
-        "name": "gallery",
-        "path": "_collections/gallery.json",
-        "fields": [
-          { "name": "comparison", "label": "Before/after comparison", "type": "boolean" },
-          { "name": "images", "label": "Images", "type": "image", "multiple": true, "required": true },
-          { "name": "description", "label": "Caption", "type": "string" }
-        ]
-      }
-    ]
+    }
   },
   "variables": {
     "name": "Mohammad Amin Samadi",
